@@ -1,0 +1,9 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-detail-clt-frs',
+  standalone: false,
+  templateUrl: './detail-clt-frs.html',
+  styleUrl: './detail-clt-frs.css',
+})
+export class DetailCltFrs {}

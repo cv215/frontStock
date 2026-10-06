@@ -1,0 +1,75 @@
+<div class="col mb-3">
+  <!--image du nouvel article-->
+  <div class="col-md-12 mb-3">
+    <img src="assets/pomme-de-terre-spunta-full-12961981.jpg"
+      class="rounded-circle" width="200px" height="200px">
+  </div>
+  <hr>
+  <!--le formulaire complet du nouvel article-->
+  <div class="col-md-12">
+    <div class="col-md-12 mb-3 ms-3">
+      <h2>
+        <i class="bi bi-info-circle-fill blow-color"></i>&nbsp; Information du {{origin}}
+      </h2>
+    </div>
+    <div class="col-md-12">
+      <form>
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Nom"
+              aria-label="First name">
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Addresse 1" aria-label="Last name">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Prenom" aria-label="First name">
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Addresse 2" aria-label="Last name">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="E-mail" aria-label="First name">
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Ville" aria-label="Last name">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Telephone" aria-label="First name">
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Code postal" aria-label="Last name">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col">
+            &nbsp;
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Pays" aria-label="Last name">
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+  <!--boutton de validation-->
+  <div class="col-md-12 text-end">
+    <button class="btn btn-danger ms-2" (click)="cancelClick()">
+      <i class="bi bi-x-circle"></i>&nbsp; Annuler
+    </button>
+    <button class="btn btn-primary ms-2" (click)="saveClick()">
+      <i class="bi bi-download"></i>&nbsp; Enregistrer
+    </button>
+  </div>
+</div>

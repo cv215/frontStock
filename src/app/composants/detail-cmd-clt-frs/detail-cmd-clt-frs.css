@@ -1,0 +1,5 @@
+.accordion-button app-detail-clt-frs {
+  flex: 1;          /* occupe toute la largeur disponible */
+  display: block;   /* s’assure que le composant se comporte comme un bloc */
+  width: 100%;      /* prend toute la largeur */
+}

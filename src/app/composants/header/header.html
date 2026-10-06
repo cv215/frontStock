@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col-md-8">
+    <div class="input-group mb-3">
+  <div class="col-md-11">
+    <input type="text" class="form-control" id="InputRecherche" placeholder="Recherche">
+  </div>
+  <button type="submit" class="input-group-text"><i class="bi bi-search"></i></button>
+</div>
+  </div>
+  <div class="col-md-4">
+    <div class="row">
+      <div class="col-md-9 text-end align-self-center">
+        <span>Bonjour {{ connectedUser?.nom }}&nbsp;{{ connectedUser?.prenom }}</span>
+      </div>
+      <div class="col-md-3">
+        <a href="javascript:void(0)" [routerLink]="['/dashboard/profil']"><i class="bi bi-person-circle" style="font-size: 2rem;"></i></a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<div class="col mb-3">
+  <!--le formulaire complet du nouvel article-->
+  <div class="col-md-12">
+    <div class="col-md-12 mb-3 ms-3 mt-3">
+      <h2>Nouvelle commande {{origin}} </h2>
+    </div>
+    <div class="custom-border border-black border-2">
+      <div class="row g-3 p-3 ">
+      <div class="col-md-5 border-end">
+        <form>
+          <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Code commande">
+          </div>
+          <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Date commande">
+          </div>
+          <div class="mb-3">
+            <select class="form-select" aria-label="Default select example">
+              <option selected>Selectionner un client</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-4 border-end">
+        <div class="col">
+          <div class="row">
+            <div class="col-md-1"><i
+                class="bi bi-info-circle-fill blow-color"></i></div>
+            <div class="col-md-10">Nom</div>
+          </div>
+          <div class="row">
+            <div class="col-md-1"><i
+                class="bi bi-info-circle-fill blow-color"></i></div>
+            <div class="col-md-10">Prenom</div>
+          </div>
+          <div class="row">
+            <div class="col-md-1"><i
+                class="bi bi-telephone-fill blow-color"></i></div>
+            <div class="col-md-10">Doli 250 68 14 45 69</div>
+          </div>
+          <div class="row">
+            <div class="col-md-1"><i
+                class="bi bi-hourglass-top blow-color"></i></div>
+            <div class="col-md-10">En preparation</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2 text-center">
+        <img src="assets/pomme-de-terre-spunta-full-12961981.jpg"
+          class="rounded-circle" width="150px" height="150px">
+      </div>
+    </div>
+
+    </div>
+  <div class="col mt-2 p-3 custom-border border-black border-2">
+    <div class="row g-3">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Code article">
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Quantité">
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Prix unitaire">
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-success">
+          <i class="bi bi-plus"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="col mt-2 p-3 custom-border border-black border-2" style="max-height: 380px; overflow-y: scroll;">
+    <div class="col-md-12">
+    <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+     <app-detail-cmd></app-detail-cmd>
+    </div>
+   </div>
+   <div class="col mt-2 p-3 custom-border border-black border-2 text-end">
+    <h3>Total de la commande : 133.9</h3>
+   </div>
+  <!--boutton de validation-->
+  <div class="col-md-12 text-end mt-2">
+    <button class="btn btn-danger ms-2" (click)="cancelClick()">
+      <i class="bi bi-x-circle"></i>&nbsp; Annuler
+    </button>
+    <button class="btn btn-primary ms-2" (click)="saveClick()">
+      <i class="bi bi-download"></i>&nbsp; Enregistrer
+    </button>
+  </div>
+</div>

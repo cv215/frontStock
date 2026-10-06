@@ -1,0 +1,35 @@
+<div class="col mb-3">
+  <!--le formulaire complet d'une nouvelle catégorie-->
+  <div class="col-md-12">
+    <div class="col-md-12 mb-3 mt-3 ms-3">
+      <h2>
+         Nouvelle catégorie
+      </h2>
+    </div>
+    <div class="col-md-12">
+      <form>
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Code catégorie"
+              aria-label="First name">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Description catégorie"
+              aria-label="Last name">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!--boutton de validation-->
+  <div class="col-md-12 text-end">
+    <button class="btn btn-danger ms-2" (click)="cancel()">
+      <i class="bi bi-x-circle"></i>&nbsp; Annuler
+    </button>
+    <button class="btn btn-primary ms-2">
+      <i class="bi bi-download"></i>&nbsp; Enregistrer
+    </button>
+  </div>
+</div>

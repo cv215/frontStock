@@ -1,0 +1,80 @@
+<main class="login-layout">
+  <section class="brand-panel" aria-label="StockFlow">
+    <div class="brand-lockup">
+      <span class="brand-icon" aria-hidden="true"><i class="bi bi-box"></i></span>
+      <span class="brand-name">StockFlow</span>
+    </div>
+
+    <div class="brand-copy">
+      <h1>Simplifiez la gestion de votre inventaire.</h1>
+      <p>Suivez vos flux de stock en temps réel, optimisez vos commandes et réduisez les ruptures d'approvisionnement grâce à une interface intelligente.</p>
+    </div>
+  </section>
+
+  <section class="login-panel" aria-labelledby="login-title">
+    <div class="login-card">
+      <h2 id="login-title">Bon retour</h2>
+      <p class="login-intro">Saisissez vos identifiants pour accéder à votre espace.</p>
+
+      <div class="login-error" role="alert" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form (ngSubmit)="login()">
+        <div class="field-group">
+          <label for="login-email">Adresse e-mail</label>
+          <div class="input-wrap">
+            <i class="bi bi-envelope" aria-hidden="true"></i>
+            <input
+              id="login-email"
+              type="email"
+              name="email"
+              autocomplete="email"
+              placeholder="exemple@entreprise.com"
+              [(ngModel)]="authenticationRequest.email"
+              required>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="login-password">Mot de passe</label>
+          <div class="input-wrap">
+            <i class="bi bi-lock" aria-hidden="true"></i>
+            <input
+              id="login-password"
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              [(ngModel)]="authenticationRequest.password"
+              required>
+            <button
+              class="password-toggle"
+              type="button"
+              [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+              (click)="togglePasswordVisibility()">
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-option">
+            <input type="checkbox" name="rememberMe" [(ngModel)]="rememberMe">
+            <span>Se souvenir de moi</span>
+          </label>
+          <a class="forgot-link" [routerLink]="['/mot-de-passe-oublie']">Mot de passe oublié ?</a>
+        </div>
+
+        <button class="submit-button" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Connexion…' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="signup-prompt">
+        Nouveau sur StockFlow ?
+        <a [routerLink]="['/inscription']">Créer un compte</a>
+      </p>
+    </div>
+  </section>
+</main>

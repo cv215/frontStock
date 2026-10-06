@@ -1,0 +1,208 @@
+<main class="register-layout">
+  <section class="brand-panel" aria-label="StockFlow">
+    <div class="brand-lockup">
+      <span class="brand-icon" aria-hidden="true"><i class="bi bi-box"></i></span>
+      <span class="brand-name">StockFlow</span>
+    </div>
+    <div class="brand-copy">
+      <h1>Prenez le contrôle total de vos flux.</h1>
+      <p>Créez votre espace utilisateur pour gérer votre inventaire et suivre vos opérations.</p>
+    </div>
+  </section>
+
+  <section class="register-panel" aria-labelledby="register-title">
+    <div class="register-card">
+      <h2 id="register-title">{{ role === 'client' ? 'Créer un compte client' : 'Inscrire une entreprise' }}</h2>
+      <p class="register-intro">{{ role === 'client' ? 'Renseignez vos informations personnelles pour accéder à votre espace.' : 'Renseignez les informations de votre entreprise.' }}</p>
+
+      <div class="register-errors" role="alert" *ngIf="errorMsg.length > 0">
+        <div *ngFor="let msg of errorMsg">{{ msg }}</div>
+      </div>
+      <div class="register-success" role="status" *ngIf="successMessage">{{ successMessage }}</div>
+
+      <form class="register-form" (ngSubmit)="inscrire()">
+        <fieldset class="role-selector">
+          <legend>Type de compte</legend>
+          <div class="role-options" role="radiogroup" aria-label="Choisir le type de compte">
+            <label class="role-option" [class.selected]="role === 'client'">
+              <input type="radio" name="role" value="client" [(ngModel)]="role" (change)="selectRole('client')">
+              <span><i class="bi bi-person" aria-hidden="true"></i> Client</span>
+            </label>
+            <label class="role-option" [class.selected]="role === 'entreprise'">
+              <input type="radio" name="role" value="entreprise" [(ngModel)]="role" (change)="selectRole('entreprise')">
+              <span><i class="bi bi-buildings" aria-hidden="true"></i> Entreprise</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <ng-container *ngIf="role === 'client'; else entrepriseFields">
+          <div class="field-group">
+            <label for="inputLastName">Nom</label>
+            <div class="input-wrap">
+              <i class="bi bi-person" aria-hidden="true"></i>
+              <input type="text" id="inputLastName" name="nom" placeholder="Dupont" autocomplete="family-name" [(ngModel)]="utilisateurDto.nom" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputFirstName">Prénom</label>
+            <div class="input-wrap">
+              <i class="bi bi-person" aria-hidden="true"></i>
+              <input type="text" id="inputFirstName" name="prenom" placeholder="Jean" autocomplete="given-name" [(ngModel)]="utilisateurDto.prenom" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputEmail">Adresse e-mail</label>
+            <div class="input-wrap">
+              <i class="bi bi-envelope" aria-hidden="true"></i>
+              <input type="email" id="inputEmail" name="email" placeholder="exemple@entreprise.com" autocomplete="email" [(ngModel)]="utilisateurDto.email" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputBirthDate">Date de naissance</label>
+            <div class="input-wrap">
+              <i class="bi bi-calendar" aria-hidden="true"></i>
+              <input type="date" id="inputBirthDate" name="dateNaissance" autocomplete="bday" [(ngModel)]="utilisateurDto.dateNaissance" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputAddress1">Adresse</label>
+            <div class="input-wrap">
+              <i class="bi bi-geo-alt" aria-hidden="true"></i>
+              <input type="text" id="inputAddress1" name="adresse1" placeholder="Numéro et nom de rue" autocomplete="address-line1" [(ngModel)]="adresseUtilisateur.adresse1" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputAddress2">Complément d’adresse</label>
+            <div class="input-wrap">
+              <i class="bi bi-geo" aria-hidden="true"></i>
+              <input type="text" id="inputAddress2" name="adresse2" placeholder="Appartement, bâtiment, étage" autocomplete="address-line2" [(ngModel)]="adresseUtilisateur.adresse2" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputCity">Ville</label>
+            <div class="input-wrap">
+              <i class="bi bi-buildings" aria-hidden="true"></i>
+              <input type="text" id="inputCity" name="ville" autocomplete="address-level2" [(ngModel)]="adresseUtilisateur.ville" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputCountry">Pays</label>
+            <div class="input-wrap">
+              <i class="bi bi-globe2" aria-hidden="true"></i>
+              <input type="text" id="inputCountry" name="pays" autocomplete="country-name" [(ngModel)]="adresseUtilisateur.pays" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputPostalCode">Code postal</label>
+            <div class="input-wrap">
+              <i class="bi bi-mailbox" aria-hidden="true"></i>
+              <input type="text" id="inputPostalCode" name="codePostale" autocomplete="postal-code" [(ngModel)]="adresseUtilisateur.codePostale" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputPassword">Mot de passe</label>
+            <div class="input-wrap">
+              <i class="bi bi-lock" aria-hidden="true"></i>
+              <input [type]="showPassword ? 'text' : 'password'" id="inputPassword" name="password" placeholder="Au moins 8 caractères" autocomplete="new-password" [(ngModel)]="utilisateurDto.motDePasse" minlength="8" required>
+              <button class="password-toggle" type="button" [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" (click)="togglePasswordVisibility('password')">
+                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputConfirmPassword">Confirmer le mot de passe</label>
+            <div class="input-wrap">
+              <i class="bi bi-lock" aria-hidden="true"></i>
+              <input [type]="showConfirmPassword ? 'text' : 'password'" id="inputConfirmPassword" name="confirmPassword" autocomplete="new-password" [(ngModel)]="confirmationMotDePasse" required>
+              <button class="password-toggle" type="button" [attr.aria-label]="showConfirmPassword ? 'Masquer la confirmation' : 'Afficher la confirmation'" (click)="togglePasswordVisibility('confirmPassword')">
+                <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #entrepriseFields>
+          <div class="field-group">
+            <label for="companyName">Nom de l’entreprise</label>
+            <div class="input-wrap">
+              <i class="bi bi-buildings" aria-hidden="true"></i>
+              <input type="text" id="companyName" name="companyName" autocomplete="organization" [(ngModel)]="entrepriseDto.nom" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="companyEmail">Adresse e-mail de l’entreprise</label>
+            <div class="input-wrap">
+              <i class="bi bi-envelope" aria-hidden="true"></i>
+              <input type="email" id="companyEmail" name="companyEmail" placeholder="contact@entreprise.com" autocomplete="email" [(ngModel)]="entrepriseDto.email" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="companyFiscalCode">Code fiscal</label>
+            <div class="input-wrap">
+              <i class="bi bi-card-text" aria-hidden="true"></i>
+              <input type="text" id="companyFiscalCode" name="codeFiscale" [(ngModel)]="entrepriseDto.codeFiscale" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="companyPhone">Téléphone</label>
+            <div class="input-wrap">
+              <i class="bi bi-telephone" aria-hidden="true"></i>
+              <input type="tel" id="companyPhone" name="numTel" autocomplete="tel" [(ngModel)]="entrepriseDto.numTel" required>
+            </div>
+          </div>
+          <div class="field-group field-full">
+            <label for="companyDescription">Description</label>
+            <textarea class="description-input" id="companyDescription" name="description" [(ngModel)]="entrepriseDto.description"></textarea>
+          </div>
+          <div class="field-group field-full">
+            <label for="companyWebsite">Site web</label>
+            <div class="input-wrap">
+              <i class="bi bi-globe" aria-hidden="true"></i>
+              <input type="url" id="companyWebsite" name="siteWeb" placeholder="https://entreprise.com" autocomplete="url" [(ngModel)]="entrepriseDto.siteWeb">
+            </div>
+          </div>
+          <div class="field-group field-full">
+            <label for="companyAddress1">Adresse</label>
+            <div class="input-wrap">
+              <i class="bi bi-geo-alt" aria-hidden="true"></i>
+              <input type="text" id="companyAddress1" name="companyAdresse1" placeholder="Numéro et nom de rue" autocomplete="address-line1" [(ngModel)]="adresseEntreprise.adresse1" required>
+            </div>
+          </div>
+          <div class="field-group field-full">
+            <label for="companyAddress2">Complément d’adresse</label>
+            <div class="input-wrap">
+              <i class="bi bi-geo" aria-hidden="true"></i>
+              <input type="text" id="companyAddress2" name="companyAdresse2" autocomplete="address-line2" [(ngModel)]="adresseEntreprise.adresse2" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="companyCity">Ville</label>
+            <div class="input-wrap">
+              <i class="bi bi-buildings" aria-hidden="true"></i>
+              <input type="text" id="companyCity" name="companyVille" autocomplete="address-level2" [(ngModel)]="adresseEntreprise.ville" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="companyCountry">Pays</label>
+            <div class="input-wrap">
+              <i class="bi bi-globe2" aria-hidden="true"></i>
+              <input type="text" id="companyCountry" name="companyPays" autocomplete="country-name" [(ngModel)]="adresseEntreprise.pays" required>
+            </div>
+          </div>
+          <div class="field-group field-full">
+            <label for="companyPostalCode">Code postal</label>
+            <div class="input-wrap">
+              <i class="bi bi-mailbox" aria-hidden="true"></i>
+              <input type="text" id="companyPostalCode" name="companyCodePostale" autocomplete="postal-code" [(ngModel)]="adresseEntreprise.codePostale" required>
+            </div>
+          </div>
+        </ng-template>
+
+        <button class="submit-button field-full" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Enregistrement…' : (role === 'client' ? 'Créer le compte client' : 'Enregistrer l’entreprise') }}
+        </button>
+      </form>
+      <p class="signin-prompt">Vous avez déjà un compte ? <a [routerLink]="['/login']">Se connecter</a></p>
+    </div>
+  </section>
+</main>
