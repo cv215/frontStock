@@ -9,7 +9,6 @@ export type { AuthentificationRequest } from './models/authentification-request'
 export type { AuthentificationResponse } from './models/authentification-response';
 export type { Cathegory } from './models/cathegory';
 export type { CathegoryDto } from './models/cathegory-dto';
-export type { ChangerMotDePasseUtilisateurDto } from './models/changer-mot-de-passe-utilisateur-dto';
 export type { Client } from './models/client';
 export type { ClientDto } from './models/client-dto';
 export type { CommandeClient } from './models/commande-client';

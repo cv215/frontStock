@@ -1,5 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthentificationService } from '../../services/authentification/authentification-service';
 
 @Component({
   selector: 'app-mot-de-passe-oublie',
@@ -10,10 +12,15 @@ import { Router } from '@angular/router';
 export class MotDePasseOublie implements OnDestroy {
   email = '';
   requestSubmitted = false;
+  errorMessage = '';
+  isSubmitting = false;
   remainingSeconds = 0;
   private countdown?: ReturnType<typeof setInterval>;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authenticationService: AuthentificationService
+  ) {}
 
   get maskedEmail(): string {
     const [localPart, domain] = this.email.split('@');
@@ -33,17 +40,33 @@ export class MotDePasseOublie implements OnDestroy {
 
   submitRequest(): void {
     this.email = this.email.trim();
-    if (!this.email) {
+    if (!this.email || this.isSubmitting) {
       return;
     }
 
-    this.requestSubmitted = true;
-    this.startCountdown();
+    this.errorMessage = '';
+    this.isSubmitting = true;
+    this.authenticationService.generatePasswordResetToken(this.email).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.requestSubmitted = true;
+        this.startCountdown();
+      },
+      error: error => this.handleRequestError(error)
+    });
   }
 
   resendEmail(): void {
-    if (this.remainingSeconds === 0) {
-      this.startCountdown();
+    if (this.remainingSeconds === 0 && !this.isSubmitting) {
+      this.errorMessage = '';
+      this.isSubmitting = true;
+      this.authenticationService.generatePasswordResetToken(this.email).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.startCountdown();
+        },
+        error: error => this.handleRequestError(error)
+      });
     }
   }
 
@@ -86,5 +109,16 @@ export class MotDePasseOublie implements OnDestroy {
       clearInterval(this.countdown);
       this.countdown = undefined;
     }
+
   }
+
+  private handleRequestError(error: unknown): void {
+    this.isSubmitting = false;
+    if (error instanceof HttpErrorResponse && error.status === 0) {
+      this.errorMessage = 'Le serveur est indisponible. Réessayez dans quelques instants.';
+      return;
+    }
+    this.errorMessage = 'La demande n’a pas pu être traitée. Vérifiez votre adresse e-mail ou réessayez plus tard.';
+  }
+
 }

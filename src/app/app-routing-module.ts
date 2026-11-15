@@ -43,8 +43,13 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: PageDashboard,
-        canActivate: [ApplicationGuard],
+    canActivate: [ApplicationGuard],
     children: [
+      {
+        path: '',
+        redirectTo: 'ensemble',
+        pathMatch: 'full'
+      },
       {
         path: 'ensemble',
         component: PageVueEnsemble,
@@ -135,6 +140,11 @@ const routes: Routes = [
       },
        {
         path: 'nouvellecategorie',
+        component: NouvelleCategory,
+        canActivate: [ApplicationGuard]
+      },
+      {
+        path: 'nouvellecategorie/:id',
         component: NouvelleCategory,
         canActivate: [ApplicationGuard]
       },

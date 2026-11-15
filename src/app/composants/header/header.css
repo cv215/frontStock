@@ -1,3 +1,102 @@
 .c1{
   color: blue !important;
 }
+.topbar-content,
+.topbar-actions,
+.topbar-greeting,
+.profile-link {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-content {
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.topbar-greeting {
+  gap: 12px;
+}
+
+.greeting-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 13px;
+  color: #f4a32b;
+  background: #fff5df;
+  font-size: 1.1rem;
+}
+
+.topbar-greeting strong,
+.topbar-greeting small {
+  display: block;
+}
+
+.topbar-greeting strong {
+  color: #1c2940;
+  font-size: .93rem;
+}
+
+.topbar-greeting small {
+  margin-top: 3px;
+  color: #8792a4;
+  font-size: .77rem;
+}
+
+.topbar-actions {
+  gap: 17px;
+}
+
+.profile-link {
+  gap: 9px;
+  color: #26334a;
+  text-decoration: none;
+}
+
+.profile-avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 50%;
+  color: #3156cf;
+  background: #e8edff;
+  font-weight: 700;
+}
+
+.profile-name {
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+.profile-link .bi-chevron-down {
+  color: #9aa4b4;
+  font-size: .7rem;
+}
+
+.client-today {
+  padding-left: 14px;
+  border-left: 1px solid #e8edf4;
+  color: #748174;
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .topbar-actions {
+    gap: 9px;
+  }
+
+  .profile-name,
+  .profile-link .bi-chevron-down,
+  .topbar-greeting small {
+    display: none;
+  }
+
+  .client-today {
+    padding-left: 8px;
+    font-size: .68rem;
+  }
+}

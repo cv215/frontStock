@@ -41,17 +41,10 @@
           <div class="input-wrap">
             <i class="bi bi-lock" aria-hidden="true"></i>
             <input
-              id="login-password"
-              [type]="showPassword ? 'text' : 'password'"
-              name="password"
-              autocomplete="current-password"
-              placeholder="••••••••"
-              [(ngModel)]="authenticationRequest.password"
-              required>
+              id="login-password" [type]="showPassword ? 'text' : 'password'" name="password" autocomplete="current-password"
+              placeholder="••••••••" [(ngModel)]="authenticationRequest.password" required>
             <button
-              class="password-toggle"
-              type="button"
-              [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+              class="password-toggle" type="button" [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
               (click)="togglePasswordVisibility()">
               <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword" aria-hidden="true"></i>
             </button>

@@ -1,1 +1,30 @@
-<h1>Bienvenue sur la page des statistiques</h1>
+<section class="page-content">
+  <header class="page-heading">
+    <div><p class="eyebrow">ANALYSE</p><h1>Statistiques</h1><p class="page-description">Des indicateurs calculés à partir des données de votre espace.</p></div>
+    <a class="btn btn-outline-secondary" [routerLink]="['/dashboard/ensemble']"><i class="bi bi-arrow-left me-2"></i>Vue d’ensemble</a>
+  </header>
+  <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
+  <div class="loading-state table-card" *ngIf="isLoading"><span class="spinner-border spinner-border-sm"></span> Calcul des statistiques...</div>
+  <ng-container *ngIf="!isLoading">
+    <div class="stats-grid">
+      <article class="stats-card"><span class="overview-icon blue"><i class="bi bi-box-seam"></i></span><div><small>Articles au catalogue</small><strong>{{ articles.length }}</strong></div></article>
+      <article class="stats-card"><span class="overview-icon violet"><i class="bi bi-people"></i></span><div><small>Clients enregistrés</small><strong>{{ clientsCount }}</strong></div></article>
+      <article class="stats-card"><span class="overview-icon orange"><i class="bi bi-truck"></i></span><div><small>Fournisseurs enregistrés</small><strong>{{ fournisseursCount }}</strong></div></article>
+      <article class="stats-card"><span class="overview-icon green"><i class="bi bi-check2-circle"></i></span><div><small>Commandes clients livrées</small><strong>{{ tauxLivraison }}<small class="percent-sign">%</small></strong></div></article>
+    </div>
+    <div class="stats-panels">
+      <section class="table-card stats-panel">
+        <div class="section-title"><div><h2>Articles par catégorie</h2><p>Répartition du catalogue par catégorie.</p></div><span class="result-count">{{ articles.length }} article{{ articles.length === 1 ? '' : 's' }}</span></div>
+        <div class="empty-state" *ngIf="categoryStats.length === 0"><i class="bi bi-tags"></i><h2>Aucune donnée disponible</h2><p>Les catégories apparaîtront dès la création d’articles.</p></div>
+        <div class="stat-row" *ngFor="let stat of categoryStats"><div class="stat-label"><strong>{{ stat.designation }}</strong><span>{{ stat.count }} article{{ stat.count === 1 ? '' : 's' }} · {{ stat.percent }} %</span></div><div class="stat-track"><span [style.width.%]="stat.percent"></span></div></div>
+      </section>
+      <section class="table-card stats-panel">
+        <div class="section-title"><div><h2>Commandes clients</h2><p>État des commandes enregistrées.</p></div><a [routerLink]="['/dashboard/commandeclient']">Consulter <i class="bi bi-arrow-right"></i></a></div>
+        <div class="order-summary"><span class="summary-dot in-progress"></span><span>En cours</span><strong>{{ commandesEnCours }}</strong></div>
+        <div class="order-summary"><span class="summary-dot delivered"></span><span>Livrées</span><strong>{{ commandesLivrees }}</strong></div>
+        <div class="order-summary total"><span>Total</span><strong>{{ commandes.length }}</strong></div>
+        <p class="stats-note">Les indicateurs reflètent les données renvoyées par l’API au chargement de cette page.</p>
+      </section>
+    </div>
+  </ng-container>
+</section>

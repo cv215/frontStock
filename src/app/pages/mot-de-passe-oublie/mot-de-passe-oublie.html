@@ -12,7 +12,7 @@
       <ng-container *ngIf="!requestSubmitted; else confirmation">
         <div class="step-icon step-icon--blue" aria-hidden="true"><i class="bi bi-key"></i></div>
         <h1 id="request-title">Mot de passe oublié ?</h1>
-        <p class="intro">Indiquez votre adresse e-mail. Nous vous enverrons un lien sécurisé pour créer un nouveau mot de passe.</p>
+        <p class="intro">Indiquez l’adresse e-mail associée à votre compte pour demander un lien de réinitialisation.</p>
 
         <form class="recovery-form" (ngSubmit)="submitRequest()">
           <label for="recovery-email">Adresse e-mail</label>
@@ -28,8 +28,9 @@
               required>
           </div>
           <p class="field-hint">Utilisez l’adresse associée à votre compte.</p>
-          <button class="primary-button" type="submit">
-            <span>Envoyer le lien</span>
+          <div class="inline-alert" role="alert" *ngIf="errorMessage">{{ errorMessage }}</div>
+          <button class="primary-button" type="submit" [disabled]="isSubmitting">
+            <span>{{ isSubmitting ? 'Envoi en cours...' : 'Envoyer le lien' }}</span>
             <i class="bi bi-arrow-right" aria-hidden="true"></i>
           </button>
         </form>
@@ -47,15 +48,16 @@
       <ng-template #confirmation>
         <div class="step-icon step-icon--green" aria-hidden="true"><i class="bi bi-envelope-check"></i></div>
         <h1 id="sent-title">Consultez vos e-mails</h1>
-        <p class="intro">Nous avons envoyé un lien de réinitialisation à l’adresse suivante :</p>
+        <p class="intro">La demande a été transmise au serveur pour l’adresse suivante :</p>
+        <div class="inline-alert" role="alert" *ngIf="errorMessage">{{ errorMessage }}</div>
         <div class="email-confirmation">
           <i class="bi bi-check-circle" aria-hidden="true"></i>
           <span>{{ maskedEmail }}</span>
         </div>
 
         <ol class="next-steps">
-          <li><span class="step-number">1</span><span>Ouvrez l’e-mail reçu de Nivalis.</span></li>
-          <li><span class="step-number">2</span><span>Cliquez sur le lien dans les 30 prochaines minutes.</span></li>
+          <li><span class="step-number">1</span><span>Consultez votre messagerie si votre compte est associé à cette adresse.</span></li>
+          <li><span class="step-number">2</span><span>Suivez les instructions du message pour continuer.</span></li>
         </ol>
 
         <button class="primary-button mailbox-button" type="button" (click)="openMailbox()">
@@ -64,8 +66,8 @@
         </button>
         <p class="resend-copy">
           Vous n’avez rien reçu ?
-          <button type="button" [disabled]="remainingSeconds > 0" (click)="resendEmail()">
-            Renvoyer l’e-mail<span *ngIf="remainingSeconds > 0"> dans {{ countdownLabel }}</span>
+          <button type="button" [disabled]="remainingSeconds > 0 || isSubmitting" (click)="resendEmail()">
+            {{ isSubmitting ? 'Envoi en cours...' : 'Renvoyer la demande' }}<span *ngIf="remainingSeconds > 0"> dans {{ countdownLabel }}</span>
           </button>
         </p>
         <button class="back-link" type="button" (click)="backToLogin()">

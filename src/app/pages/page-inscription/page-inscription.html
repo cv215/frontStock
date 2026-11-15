@@ -130,6 +130,13 @@
             </div>
           </div>
           <div class="field-group">
+            <label for="companyManager">Nom du responsable</label>
+            <div class="input-wrap">
+              <i class="bi bi-person" aria-hidden="true"></i>
+              <input type="text" id="companyManager" name="companyManager" [(ngModel)]="entrepriseDto.nomResponsable" required>
+            </div>
+          </div>
+          <div class="field-group">
             <label for="companyEmail">Adresse e-mail de l’entreprise</label>
             <div class="input-wrap">
               <i class="bi bi-envelope" aria-hidden="true"></i>
@@ -148,6 +155,26 @@
             <div class="input-wrap">
               <i class="bi bi-telephone" aria-hidden="true"></i>
               <input type="tel" id="companyPhone" name="numTel" autocomplete="tel" [(ngModel)]="entrepriseDto.numTel" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="companyPassword">Mot de passe</label>
+            <div class="input-wrap">
+              <i class="bi bi-lock" aria-hidden="true"></i>
+              <input [type]="showPassword ? 'text' : 'password'" id="companyPassword" name="companyPassword" placeholder="Au moins 8 caractères" autocomplete="new-password" [(ngModel)]="entrepriseDto.motDePasse" minlength="8" required>
+              <button class="password-toggle" type="button" [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" (click)="togglePasswordVisibility('password')">
+                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="companyConfirmPassword">Confirmer le mot de passe</label>
+            <div class="input-wrap">
+              <i class="bi bi-lock" aria-hidden="true"></i>
+              <input [type]="showConfirmPassword ? 'text' : 'password'" id="companyConfirmPassword" name="companyConfirmPassword" autocomplete="new-password" [(ngModel)]="confirmationMotDePasse" required>
+              <button class="password-toggle" type="button" [attr.aria-label]="showConfirmPassword ? 'Masquer la confirmation' : 'Afficher la confirmation'" (click)="togglePasswordVisibility('confirmPassword')">
+                <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
           <div class="field-group field-full">
@@ -197,9 +224,8 @@
             </div>
           </div>
         </ng-template>
-
-        <button class="submit-button field-full" type="submit" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Enregistrement…' : (role === 'client' ? 'Créer le compte client' : 'Enregistrer l’entreprise') }}
+        <button class="submit-button" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Enregistrement...' : (role === 'client' ? 'Créer un compte' : 'Inscrire l’entreprise') }}
         </button>
       </form>
       <p class="signin-prompt">Vous avez déjà un compte ? <a [routerLink]="['/login']">Se connecter</a></p>

@@ -15,4 +15,11 @@ export class AuthentificationService {
   authenticate(request: AuthentificationRequest): Observable<AuthentificationResponse> {
     return this.http.post<AuthentificationResponse>(`${this.apiUrl}/connexion`, request);
   }
+
+  generatePasswordResetToken(email: string): Observable<string> {
+    return this.http.post(`${this.apiUrl}/token`, null, {
+      params: { username: email },
+      responseType: 'text'
+    });
+  }
 }

@@ -1,39 +1,35 @@
-<div class="col">
-  <div class="row m-3">
-    <div class="col-md-8 p-0">
-      <h1>Mouvement du stock</h1>
+<section class="page-content">
+  <header class="page-heading">
+    <div><p class="eyebrow">INVENTAIRE</p><h1>Mouvements de stock</h1><p class="page-description">Consultez l’historique et enregistrez une entrée, une sortie ou une correction.</p></div>
+    <button class="btn btn-primary" type="button" [disabled]="articles.length === 0" (click)="showForm = !showForm"><i class="bi" [class.bi-plus-lg]="!showForm" [class.bi-x-lg]="showForm"></i><span class="ms-2">{{ showForm ? 'Fermer' : 'Nouveau mouvement' }}</span></button>
+  </header>
+
+  <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
+  <div class="success-alert" role="status" *ngIf="successMessage"><i class="bi bi-check-circle"></i> {{ successMessage }}</div>
+
+  <form class="form-card movement-form" *ngIf="showForm" (ngSubmit)="enregistrerMouvement()">
+    <div class="form-section-heading"><span class="form-icon"><i class="bi bi-arrow-left-right"></i></span><div><h2>Enregistrer un mouvement</h2><p>Une correction remplace la quantité disponible par la quantité saisie.</p></div></div>
+    <div class="form-grid">
+      <label class="form-field"><span>Article <b>*</b></span><select class="form-select" name="article" [(ngModel)]="selectedArticleId" (ngModelChange)="selectedArticleChanged()" required><option [ngValue]="null" disabled>Choisir un article</option><option *ngFor="let article of articles" [ngValue]="article.id">{{ article.codeArticle }} — {{ article.designation }}</option></select></label>
+      <label class="form-field"><span>Type de mouvement <b>*</b></span><select class="form-select" name="typeMouvement" [(ngModel)]="typeMouvement"><option value="ENTREE">Entrée</option><option value="SORTIE">Sortie</option><option value="CORRECTION_POS">Correction positive</option><option value="CORRECTION_NEG">Correction négative</option></select></label>
+      <label class="form-field"><span>{{ typeMouvement.startsWith('CORRECTION') ? 'Quantité réelle en stock' : 'Quantité' }} <b>*</b></span><input class="form-control" type="number" name="quantite" min="1" step="1" [(ngModel)]="quantite" required></label>
     </div>
-    <div class="col-md-4 text-right">
-      <app-boutton-action
-      [isImporterVisible]="false"
-      [isNouveauVisible]="false">
-    </app-boutton-action>
+    <div class="form-actions"><button class="btn btn-outline-secondary" type="button" (click)="showForm = false">Annuler</button><button class="btn btn-primary" type="submit" [disabled]="isSaving"><span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>{{ isSaving ? 'Enregistrement...' : 'Enregistrer le mouvement' }}</button></div>
+  </form>
+
+  <section class="stock-overview table-card">
+    <div class="stock-select"><label for="articleFilter">Article sélectionné</label><select class="form-select" id="articleFilter" name="articleFilter" [(ngModel)]="selectedArticleId" (ngModelChange)="selectedArticleChanged()"><option [ngValue]="null" disabled>Choisir un article</option><option *ngFor="let article of articles" [ngValue]="article.id">{{ article.codeArticle }} — {{ article.designation }}</option></select></div>
+    <div class="stock-total"><span>Stock réel</span><strong>{{ stockReel === null ? '—' : stockReel }} <small>unité{{ stockReel === 1 ? '' : 's' }}</small></strong></div>
+  </section>
+
+  <section class="table-card">
+    <div class="section-title"><div><h2>Historique des mouvements</h2><p>{{ selectedArticle?.designation || 'Sélectionnez un article pour afficher son historique.' }}</p></div><span class="result-count">{{ mouvements.length }} mouvement{{ mouvements.length === 1 ? '' : 's' }}</span></div>
+    <div class="loading-state" *ngIf="isLoading"><span class="spinner-border spinner-border-sm"></span> Chargement de l’historique...</div>
+    <div class="empty-state" *ngIf="!isLoading && !errorMessage && mouvements.length === 0"><i class="bi bi-arrow-left-right"></i><h2>Aucun mouvement trouvé</h2><p>Les mouvements de l’article sélectionné apparaîtront ici.</p></div>
+    <div class="table-responsive" *ngIf="!isLoading && mouvements.length > 0">
+      <table class="table align-middle mb-0"><thead><tr><th>Date</th><th>Article</th><th>Opération</th><th class="text-end">Quantité</th></tr></thead>
+        <tbody><tr *ngFor="let mouvement of mouvements"><td>{{ mouvement.dateMvt | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ mouvement.article?.designation || selectedArticle?.designation }}</td><td><span class="category-pill">{{ mouvement.typeMvstkt || 'Mouvement' }}</span></td><td class="text-end"><strong>{{ mouvement.quantite }}</strong></td></tr></tbody>
+      </table>
     </div>
-  </div>
-  <div class="col m-3">
-    <div class="accordion accordion-flush" id="accordionFlushExample">
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button collapsed" type="button"
-            data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
-            aria-expanded="false" aria-controls="flush-collapseOne">
-            <app-detail-mvt-stk></app-detail-mvt-stk>
-          </button>
-        </h2>
-        <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" style="max-height: 300px; overflow-y: scroll">
-          <div class="accordion-body">
-            <app-detail-mvt-stk-article></app-detail-mvt-stk-article>
-            <app-detail-mvt-stk-article></app-detail-mvt-stk-article>
-            <app-detail-mvt-stk-article></app-detail-mvt-stk-article>
-            <app-detail-mvt-stk-article></app-detail-mvt-stk-article>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row mb-3">
-    <div class="col-md-12 text-center">
-      <app-pagination></app-pagination>
-    </div>
-  </div>
-</div>
+  </section>
+</section>

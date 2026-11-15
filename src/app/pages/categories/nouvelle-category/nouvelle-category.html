@@ -7,17 +7,22 @@
       </h2>
     </div>
     <div class="col-md-12">
+      <div class="alert alert-danger" *ngIf="errorMsg.length > 0">
+        <div *ngFor="let msg of errorMsg">
+          <span>{{ msg }}</span>
+        </div>
+      </div>
       <form>
         <div class="row mb-3">
           <div class="col">
-            <input type="text" class="form-control" placeholder="Code catégorie"
-              aria-label="First name">
+            <input type="text" class="form-control" placeholder="Code catégorie" name="codeCat" [(ngModel)]="categoryDto.code"
+              aria-label="Code catégorie" required>
           </div>
         </div>
         <div class="row mb-3">
           <div class="col">
-            <input type="text" class="form-control" placeholder="Description catégorie"
-              aria-label="Last name">
+            <input type="text" class="form-control" placeholder="Description catégorie" name="designationCat" [(ngModel)]="categoryDto.designation"
+              aria-label="Désignation catégorie" required>
           </div>
         </div>
       </form>
@@ -28,7 +33,7 @@
     <button class="btn btn-danger ms-2" (click)="cancel()">
       <i class="bi bi-x-circle"></i>&nbsp; Annuler
     </button>
-    <button class="btn btn-primary ms-2">
+    <button type="button" class="btn btn-primary ms-2" [disabled]="isSaving" (click)="enregistrerCategory()">
       <i class="bi bi-download"></i>&nbsp; Enregistrer
     </button>
   </div>

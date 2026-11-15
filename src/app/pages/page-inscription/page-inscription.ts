@@ -1,11 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { AdresseDto, EntrepriseDto, UtilisateurDto } from '../../api/models';
+import { AdresseDto, ClientDto, EntrepriseDto, FournisseurDto, UtilisateurDto } from '../../api/models';
 import { Router } from '@angular/router';
 import { User } from '../../services/user/user';
 import { EntrepriseService } from '../../services/entreprise/entreprise-service';
 import { UtilisateurService } from '../../services/utilisateur/utilisateur-service';
-import { switchMap, throwError } from 'rxjs';
+import { finalize, map, switchMap, throwError } from 'rxjs';
+import { ClientService } from '../../services/client/client-service';
+import { FournisseurService } from '../../services/fournisseur/fournisseur-service';
 
 type InscriptionRole = 'client' | 'entreprise';
 
@@ -20,6 +22,8 @@ export class PageInscription {
   utilisateurDto: UtilisateurDto = {};
   adresseUtilisateur: AdresseDto = {};
   entrepriseDto: EntrepriseDto = {};
+  clientDto: ClientDto = {};
+  fournisseurDto: FournisseurDto = {};
   adresseEntreprise: AdresseDto = {};
   confirmationMotDePasse = '';
   errorMsg: string[] = [];
@@ -31,6 +35,8 @@ export class PageInscription {
   constructor(
     private entrepriseService: EntrepriseService,
     private utilisateurService: UtilisateurService,
+    private clientService: ClientService,
+    private fournisseurService: FournisseurService,
     private userService: User,
     private router: Router
   ) {}
@@ -57,6 +63,10 @@ export class PageInscription {
       this.inscrireEntreprise();
       return;
     }
+    /*else if (this.role === 'fournisseur') {
+      this.inscrireFournisseur();
+      return;
+    }*/
 
     this.inscrireClient();
   }
@@ -75,7 +85,6 @@ export class PageInscription {
     }
 
     this.utilisateurDto.email = email;
-    this.utilisateurDto.dateNaissance = `${this.utilisateurDto.dateNaissance}T00:00:00Z`;
     this.utilisateurDto.adresse = this.adresseUtilisateur;
     this.isSubmitting = true;
 
@@ -102,16 +111,76 @@ export class PageInscription {
   }
 
   private inscrireEntreprise(): void {
-    this.entrepriseDto.email = this.entrepriseDto.email?.trim().toLowerCase();
+    const email = this.entrepriseDto.email?.trim().toLowerCase() ?? '';
+    const password = this.entrepriseDto.motDePasse ?? '';
+
+    this.utilisateurDto.adresse = this.adresseEntreprise;
+
+    if (password.length < 8) {
+      this.errorMsg = ['Le mot de passe doit contenir au moins 8 caractères.'];
+      return;
+    }
+    if (password !== this.confirmationMotDePasse) {
+      this.errorMsg = ['Les deux mots de passe ne correspondent pas.'];
+      return;
+    }
+
+    this.entrepriseDto.email = email;
     this.entrepriseDto.adresse = this.adresseEntreprise;
+    this.entrepriseDto.utilisateurs = [{
+      adresse: this.adresseEntreprise,
+      email,
+      motDePasse: password,
+      roles: [{ libelle: 'ADMIN_ENTREPRISE' }],
+    }];
+
     this.isSubmitting = true;
 
-    this.entrepriseService.sinscrire(this.entrepriseDto).subscribe({
-      next: () => {
-        this.successMessage = 'Entreprise enregistrée. Aucun compte utilisateur associé n’est créé pour le moment.';
-        this.isSubmitting = false;
+    this.entrepriseService.sinscrire(this.entrepriseDto).pipe(
+      switchMap(entreprise =>
+        this.userService.login({ email, password }).pipe(
+          map(response => ({ entreprise, response }))
+        )
+      ),
+      switchMap(({ entreprise, response }) => {
+        if (!response.accessToken) {
+          return throwError(() => new Error('Le compte est créé, mais le serveur n’a pas retourné de jeton.'));
+        }
+        this.userService.setConnectedUser(response);
+        return this.userService.getUserByEmail(email).pipe(
+          map(utilisateur => {
+            const idEntreprise = [
+              utilisateur.idEntreprise,
+              utilisateur.entreprise?.id,
+              entreprise.id
+            ].find((id): id is number =>
+              typeof id === 'number' && Number.isInteger(id) && id > 0
+            );
+            if (idEntreprise == null) {
+              return utilisateur;
+            }
+
+            return {
+              ...utilisateur,
+              idEntreprise,
+              entreprise: {
+                ...utilisateur.entreprise,
+                id: utilisateur.entreprise?.id ?? idEntreprise
+              }
+            };
+          })
+        );
+      }),
+      finalize(() => {
+    this.isSubmitting = false;
+  })
+    ).subscribe({
+      next: utilisateur => {
+        this.userService.setUtilisateur(utilisateur);
+        this.router.navigate(['/dashboard']);
       },
       error: error => {
+        this.userService.clearSession();
         this.errorMsg = this.getErrorMessages(error, 'Une erreur est survenue lors de l’enregistrement de l’entreprise.');
         this.isSubmitting = false;
       }
@@ -120,6 +189,11 @@ export class PageInscription {
 
   private getErrorMessages(error: unknown, fallback: string): string[] {
     if (error instanceof HttpErrorResponse) {
+      if (error.status === 401) {
+        return [
+          'Votre inscription a peut-être été enregistrée, mais la connexion a échoué. Réessayez de vous connecter; si le problème persiste, l’API doit émettre un JWT accepté par sa configuration de validation.'
+        ];
+      }
       const response = error.error as { message?: string; errors?: string[] } | null;
       return response?.errors?.length ? response.errors : [response?.message || fallback];
     }

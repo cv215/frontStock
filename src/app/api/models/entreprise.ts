@@ -8,6 +8,7 @@ export interface Entreprise {
   codeFiscale?: string;
   creationDate?: string;
   description?: string;
+  motDePasse?: string;
   email?: string;
   id?: number;
   lastUpdateDate?: string;

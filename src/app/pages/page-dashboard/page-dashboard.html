@@ -1,27 +1,30 @@
-<div class="main-container">
-  <div class="row min-height-600 no-flex-wrap">
-    <div class="card col-md-2 mr-2">
-     <div class="col pl-0 pr-0">
-      <div class="card mt-3 mb-2 border-none">
-        <h5>Gestion de stock V2.0</h5>
-      </div>
-      <div>
-        <app-menu></app-menu>
-      </div>
-     </div>
+<div class="dashboard-shell" [class.client-shell]="isClient">
+  <aside class="dashboard-sidebar">
+    <a class="sidebar-brand" [routerLink]="['/dashboard/ensemble']">
+      <span class="brand-mark"><i class="bi" [class.bi-box-seam]="!isClient" [class.bi-bar-chart-fill]="isClient"></i></span>
+      <span><strong>{{ isClient ? 'Stockly' : 'StockFlow' }}</strong><small *ngIf="!isClient">Gestion de stock</small></span>
+    </a>
+    <div class="client-space-card" *ngIf="isClient">
+      <span>ESPACE CLIENT</span>
+      <strong>{{ connectedUserName }}</strong>
     </div>
-    <div class="card col-md-10 pl-0 pr-0 background-grey border-none">
-      <div class="col pl-0 pr-0 d-flex flex-column justify-content-between">
-        <div class="card p-3 min-height-80 mb-2">
-         <app-header></app-header>
-        </div>
-        <div class="card mb-2" style="min-height: 480px;">
-          <router-outlet></router-outlet>
-        </div>
-        <div class="card min-height-80">
-          footer
-        </div>
-      </div>
+    <app-menu></app-menu>
+    <div class="sidebar-footer">
+      <ng-container *ngIf="!isClient; else clientSidebarAccount">
+        <span class="online-indicator"></span>
+        <span>Votre espace est prêt</span>
+      </ng-container>
+      <ng-template #clientSidebarAccount>
+        <span class="client-sidebar-avatar">{{ userInitials }}</span>
+        <span class="client-sidebar-user"><strong>{{ connectedUserName }}</strong><small>Compte client</small></span>
+        <app-deconnexion></app-deconnexion>
+      </ng-template>
     </div>
+  </aside>
+
+  <div class="dashboard-main">
+    <header class="dashboard-topbar"><app-header></app-header></header>
+    <main class="dashboard-content"><router-outlet></router-outlet></main>
+    <footer class="dashboard-footer"><span>StockFlow · Gestion simplifiée</span><span>© {{ currentYear }}</span></footer>
   </div>
 </div>

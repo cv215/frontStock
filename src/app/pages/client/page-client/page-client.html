@@ -1,22 +1,59 @@
-<div class="col">
-  <div class="row m-3">
-    <div class="col-md-8 p-0">
-      <h1>Liste des clients</h1>
+<section class="page-content">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">RELATION CLIENT</p>
+      <h1>Clients</h1>
+      <p class="page-description">Retrouvez et gérez les contacts de votre entreprise.</p>
     </div>
-    <div id="client" class="col-md-4 text-right">
-      <app-boutton-action (clickEvent)="nouveauClient()"></app-boutton-action>
+    <app-boutton-action [isImporterVisible]="false" [isExporterVisible]="false"
+      (clickEvent)="nouveauClient()"></app-boutton-action>
+  </header>
+
+  <div class="list-toolbar">
+    <label class="search-field">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()"
+        placeholder="Rechercher un client..." aria-label="Rechercher un client">
+    </label>
+    <span class="result-count">{{ filteredClients.length }} client{{ filteredClients.length === 1 ? '' : 's' }}</span>
+  </div>
+
+  <div class="inline-alert" role="alert" *ngIf="errorMessage">
+    <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+  </div>
+
+  <div class="table-card">
+    <div class="loading-state" *ngIf="isLoading"><span class="spinner-border spinner-border-sm"></span> Chargement des clients...</div>
+    <div class="empty-state" *ngIf="!isLoading && !errorMessage && filteredClients.length === 0">
+      <i class="bi bi-people"></i>
+      <h2>{{ searchTerm ? 'Aucun résultat' : 'Aucun client pour le moment' }}</h2>
+      <p>{{ searchTerm ? 'Essayez un autre nom ou une autre adresse e-mail.' : 'Ajoutez votre premier client pour commencer.' }}</p>
+      <button *ngIf="!searchTerm" class="btn btn-primary" type="button" (click)="nouveauClient()">Ajouter un client</button>
+    </div>
+    <div class="table-responsive" *ngIf="!isLoading && filteredClients.length > 0">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Client</th><th>Coordonnées</th><th>Ville</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let client of pagedClients">
+            <td><div class="person-cell"><span class="avatar">{{ (client.prenom || client.nom || 'C').charAt(0) }}</span><div><strong>{{ client.prenom }} {{ client.nom }}</strong><small>Client #{{ client.id }}</small></div></div></td>
+            <td><a *ngIf="client.email" [href]="'mailto:' + client.email">{{ client.email }}</a><span *ngIf="!client.email" class="muted-value">E-mail non renseigné</span><small>{{ client.numTel || 'Téléphone non renseigné' }}</small></td>
+            <td>{{ client.adresse?.ville || '—' }}<small>{{ client.adresse?.pays || '' }}</small></td>
+            <td class="text-end">
+              <ng-container *ngIf="deleteCandidateId !== client.id; else confirmDelete">
+                <button class="icon-button danger-action" type="button" aria-label="Supprimer le client" (click)="deleteCandidateId = client.id ?? null"><i class="bi bi-trash3"></i></button>
+              </ng-container>
+              <ng-template #confirmDelete>
+                <span class="confirm-actions"><button class="btn btn-sm btn-outline-secondary" type="button" (click)="deleteCandidateId = null">Annuler</button><button class="btn btn-sm btn-danger" type="button" (click)="supprimerClient(client.id!)">Confirmer</button></span>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="col m-3">
-    <app-detail-clt-frs></app-detail-clt-frs>
-    <app-detail-clt-frs></app-detail-clt-frs>
-    <app-detail-clt-frs></app-detail-clt-frs>
-    <app-detail-clt-frs></app-detail-clt-frs>
-    <app-detail-clt-frs></app-detail-clt-frs>
-  </div>
-  <div class="row mb-3">
-    <div class="col-md-12 text-center">
-      <app-pagination></app-pagination>
-    </div>
-  </div>
-</div>
+  <nav class="list-pagination" *ngIf="!isLoading && totalPages > 1" aria-label="Pagination clients">
+    <button class="btn btn-sm btn-outline-secondary" type="button" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">Précédent</button>
+    <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+    <button class="btn btn-sm btn-outline-secondary" type="button" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">Suivant</button>
+  </nav>
+</section>

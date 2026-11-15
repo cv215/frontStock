@@ -38,6 +38,7 @@ import { MotDePasseOublie } from './pages/mot-de-passe-oublie/mot-de-passe-oubli
 import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpIntercepterService } from './services/intercepter/http-intercepter-service';
+import { Deconnexion } from './composants/deconnexion/deconnexion';
 
 @NgModule({
   declarations: [
@@ -73,13 +74,13 @@ import { HttpIntercepterService } from './services/intercepter/http-intercepter-
     PageProfil,
     ChangerMotDePasse,
     MotDePasseOublie,
+    Deconnexion,
   ],
   imports: [BrowserModule, AppRoutingModule, RouterModule, FormsModule],
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: HttpIntercepterService, multi: true }
-
+    { provide: HTTP_INTERCEPTORS, useClass: HttpIntercepterService, multi: true },
   ],
   bootstrap: [App],
 })

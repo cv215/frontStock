@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthentificationService } from '../authentification/authentification-service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthentificationRequest, AuthentificationResponse, UtilisateurDto } from '../../api/models';
 import { UtilisateurService } from '../utilisateur/utilisateur-service';
@@ -20,10 +20,7 @@ export class User {
   }
 
   getUserByEmail(email: string): Observable<UtilisateurDto> {
-    if (email !== undefined ){
-      return this.utilisateurService.findByEmail(email);
-    }
-    return of();
+    return this.utilisateurService.findByEmail(email);
   }
 
   setConnectedUser(user: AuthentificationResponse): void {

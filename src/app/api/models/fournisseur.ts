@@ -11,6 +11,7 @@ export interface Fournisseur {
   id?: number;
   idEntreprise?: number;
   lastUpdateDate?: string;
+  nomResponsable?: string;
   nom?: string;
   numTel?: string;
   photo?: string;

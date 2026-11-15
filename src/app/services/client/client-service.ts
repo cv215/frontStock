@@ -25,6 +25,6 @@ export class ClientService {
   }
 
   delete(id: number): Observable<void>{
-    return this.http.delete<void>(`${this.apiUrl}/delete/{id}`)
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`)
   }
 }

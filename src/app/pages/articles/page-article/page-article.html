@@ -1,22 +1,60 @@
-<div class="col">
-  <div class="row m-3">
-    <div class="col-md-8 p-0">
-      <h1>Liste des articles</h1>
+<section class="page-content">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">CATALOGUE</p>
+      <h1>Articles</h1>
+      <p class="page-description">Suivez votre catalogue, vos prix et vos catégories.</p>
     </div>
-    <div class="col-md-4 text-right">
-      <app-boutton-action (clickEvent)= "nouvelArticle()"></app-boutton-action>
+    <app-boutton-action [isImporterVisible]="false" [isExporterVisible]="false"
+      (clickEvent)="nouvelArticle()"></app-boutton-action>
+  </header>
+
+  <div class="list-toolbar">
+    <label class="search-field">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()"
+        placeholder="Rechercher un article..." aria-label="Rechercher un article">
+    </label>
+    <span class="result-count">{{ filteredArticles.length }} article{{ filteredArticles.length === 1 ? '' : 's' }}</span>
+  </div>
+
+  <div class="inline-alert" role="alert" *ngIf="errorMessage">
+    <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+  </div>
+
+  <div class="table-card">
+    <div class="loading-state" *ngIf="isLoading"><span class="spinner-border spinner-border-sm"></span> Chargement du catalogue...</div>
+    <div class="empty-state" *ngIf="!isLoading && !errorMessage && filteredArticles.length === 0">
+      <i class="bi bi-box-seam"></i>
+      <h2>{{ searchTerm ? 'Aucun résultat' : 'Votre catalogue est vide' }}</h2>
+      <p>{{ searchTerm ? 'Essayez un autre code, nom ou catégorie.' : 'Ajoutez un article pour commencer à suivre votre stock.' }}</p>
+      <button *ngIf="!searchTerm" class="btn btn-primary" type="button" (click)="nouvelArticle()">Ajouter un article</button>
+    </div>
+    <div class="table-responsive" *ngIf="!isLoading && filteredArticles.length > 0">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Article</th><th>Catégorie</th><th class="text-end">Prix HT</th><th class="text-end">Prix TTC</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let article of pagedArticles">
+            <td><div class="person-cell"><span class="avatar article-avatar"><i class="bi bi-box"></i></span><div><strong>{{ article.designation || 'Sans désignation' }}</strong><small>{{ article.codeArticle || 'Code non renseigné' }}</small></div></div></td>
+            <td><span class="category-pill">{{ article.cathegory?.designation || 'Sans catégorie' }}</span></td>
+            <td class="text-end">{{ article.prixUnitaireHt | number:'1.0-2' }} XAF</td>
+            <td class="text-end"><strong>{{ article.prixUnitaireTtc | number:'1.0-2' }} XAF</strong></td>
+            <td class="text-end">
+              <ng-container *ngIf="deleteCandidateId !== article.id; else confirmDelete">
+                <button class="icon-button danger-action" type="button" aria-label="Supprimer l’article" (click)="deleteCandidateId = article.id ?? null"><i class="bi bi-trash3"></i></button>
+              </ng-container>
+              <ng-template #confirmDelete>
+                <span class="confirm-actions"><button class="btn btn-sm btn-outline-secondary" type="button" (click)="deleteCandidateId = null">Annuler</button><button class="btn btn-sm btn-danger" type="button" (click)="supprimerArticle(article.id!)">Confirmer</button></span>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="col m-3">
-    <app-detail-article></app-detail-article>
-    <app-detail-article></app-detail-article>
-    <app-detail-article></app-detail-article>
-    <app-detail-article></app-detail-article>
-    <app-detail-article></app-detail-article>
-  </div>
-  <div class="row mb-3">
-    <div class="col-md-12 text-center">
-      <app-pagination></app-pagination>
-    </div>
-  </div>
-</div>
+  <nav class="list-pagination" *ngIf="!isLoading && totalPages > 1" aria-label="Pagination des articles">
+    <button class="btn btn-sm btn-outline-secondary" type="button" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">Précédent</button>
+    <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+    <button class="btn btn-sm btn-outline-secondary" type="button" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">Suivant</button>
+  </nav>
+</section>

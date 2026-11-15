@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChangerMotDePasseUtilisateurDto } from '../../../api/models';
-import { CategoryService } from '../../../services/cathegory/category-service';
+
+interface ChangerMotDePasseUtilisateurDto {
+  nouveauMotDePasse?: string;
+  confirmerMotDePasse?: string;
+}
 
 @Component({
   selector: 'app-changer-mot-de-passe',
@@ -11,16 +14,40 @@ import { CategoryService } from '../../../services/cathegory/category-service';
 })
 export class ChangerMotDePasse implements OnInit {
   changerMotDePasse: ChangerMotDePasseUtilisateurDto = {};
+  ancienMotDePasse = '';
+  errorMessage = '';
+
   constructor(
-    private utili: CategoryService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.utili.findAll().subscribe(res => {
-    });
   }
+
+  changerMotDePasseUtilisateur(): void {
+    this.errorMessage = '';
+    const nouveauMotDePasse = this.changerMotDePasse.nouveauMotDePasse?.trim() ?? '';
+    const confirmerMotDePasse = this.changerMotDePasse.confirmerMotDePasse?.trim() ?? '';
+
+    if (!this.ancienMotDePasse || !nouveauMotDePasse || !confirmerMotDePasse) {
+      this.errorMessage = 'Tous les champs sont obligatoires.';
+      return;
+    }
+
+    if (nouveauMotDePasse.length < 8) {
+      this.errorMessage = 'Le nouveau mot de passe doit comporter au moins 8 caractères.';
+      return;
+    }
+
+    if (nouveauMotDePasse !== confirmerMotDePasse) {
+      this.errorMessage = 'Les deux nouveaux mots de passe ne correspondent pas.';
+      return;
+    }
+
+    this.errorMessage = 'La modification du mot de passe n’est pas encore prise en charge par l’API. Contactez un administrateur.';
+  }
+
   cancel(): void {
-    this.router.navigate(['dashboard','profil']);
+    this.router.navigate(['dashboard', 'profil']);
   }
 }

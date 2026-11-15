@@ -1,20 +1,15 @@
-<div class="row">
-  <div class="col-md-8">
-    <div class="input-group mb-3">
-  <div class="col-md-11">
-    <input type="text" class="form-control" id="InputRecherche" placeholder="Recherche">
+<div class="topbar-content">
+  <div class="topbar-greeting">
+    <span class="greeting-icon"><i class="bi bi-sun"></i></span>
+    <div><strong>Bonjour{{ connectedUser?.prenom ? ', ' + connectedUser?.prenom : connectedUser?.nom ? ', ' + connectedUser?.nom : connectedUser?.email ? ', ' + connectedUser?.email : '' }}</strong><small>{{ profileLoadError || (isClient ? 'Bienvenue dans votre espace client.' : 'Voici votre espace de gestion.') }}</small></div>
   </div>
-  <button type="submit" class="input-group-text"><i class="bi bi-search"></i></button>
-</div>
-  </div>
-  <div class="col-md-4">
-    <div class="row">
-      <div class="col-md-9 text-end align-self-center">
-        <span>Bonjour {{ connectedUser?.nom }}&nbsp;{{ connectedUser?.prenom }}</span>
-      </div>
-      <div class="col-md-3">
-        <a href="javascript:void(0)" [routerLink]="['/dashboard/profil']"><i class="bi bi-person-circle" style="font-size: 2rem;"></i></a>
-      </div>
-    </div>
+  <div class="topbar-actions">
+    <a class="profile-link" [routerLink]="['/dashboard/profil']" aria-label="Ouvrir mon profil">
+      <span class="profile-avatar">{{ (connectedUser?.prenom || connectedUser?.nom || 'U').charAt(0) }}</span>
+      <span class="profile-name">{{ connectedUser?.prenom || connectedUser?.nom || connectedUser?.email || 'Mon profil' }}</span>
+      <i class="bi bi-chevron-down" aria-hidden="true"></i>
+    </a>
+    <span class="client-today" *ngIf="isClient">Aujourd’hui · {{ todayLabel }}</span>
+    <app-deconnexion *ngIf="!isClient"></app-deconnexion>
   </div>
 </div>

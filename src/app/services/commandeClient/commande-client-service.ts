@@ -31,11 +31,11 @@ export class CommandeClientService {
   }
 
   updateClient(idCommande: number,idClient: number): Observable<CommandeClientDto> {
-    return this.http.get<CommandeClientDto>(`${this.apiUrl}/historique/commandeclient/update/client/${idCommande}/${idClient}`);
+    return this.http.get<CommandeClientDto>(`${this.apiUrl}/update/client/${idCommande}/${idClient}`);
   }
 
   updateEtatCommande(idCommande: number,etatCommande: 'EN_COURS' | 'VALIDE' | 'LIVREE'): Observable<CommandeClientDto> {
-    return this.http.get<CommandeClientDto>(`${this.apiUrl}/historique/commandefournisseur/update/etat/${idCommande}/${etatCommande}`);
+    return this.http.get<CommandeClientDto>(`${this.apiUrl}/update/etat/${idCommande}/${etatCommande}`);
   }
 
   updateQuantiteCommande(idCommande: number,idLigneCommande: number,quantite: number): Observable<CommandeClientDto> {

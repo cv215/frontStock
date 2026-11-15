@@ -1,9 +1,138 @@
-ul
-{
-  list-style-type: none;
+.side-navigation {
+  display: grid;
+  gap: 11px;
 }
-li a {
-  display: block;
-  padding: 8px;
+
+.nav-group {
+  min-width: 0;
+}
+
+.nav-group-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 9px;
+  border: 0;
+  border-radius: 8px;
+  color: #aab8cd;
+  background: transparent;
+  text-align: left;
+  transition: color .18s ease, background .18s ease;
+}
+
+.nav-group-toggle:hover,
+.nav-group-toggle[aria-expanded="true"] {
+  color: #fff;
+  background: #1b2940;
+}
+
+.nav-group-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.nav-group-title i {
+  width: 17px;
+  color: #8292aa;
+  font-size: .9rem;
+}
+
+.nav-chevron {
+  color: #8090a9;
+  font-size: .7rem;
+  transition: transform .18s ease;
+}
+
+.nav-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.nav-group-items {
+  display: grid;
+  gap: 2px;
+  margin: 3px 0 4px 12px;
+  padding-left: 9px;
+  border-left: 1px solid #334056;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1px 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: #b6c2d4;
+  font-size: .88rem;
   text-decoration: none;
+  transition: color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.nav-link i {
+  width: 18px;
+  color: #8292aa;
+  font-size: 1rem;
+}
+
+.nav-link:hover {
+  color: #fff;
+  background: #1b2940;
+  transform: translateX(2px);
+}
+
+.nav-link.active {
+  color: #fff;
+  background: #2d4fc5;
+  box-shadow: 0 6px 16px rgb(20 49 142 / 24%);
+}
+
+.nav-link.active i {
+  color: #dce6ff;
+}
+
+@media (max-width: 900px) {
+  .side-navigation {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 7px;
+    padding: 0;
+  }
+
+  .nav-group {
+    align-self: start;
+    border: 1px solid #2b3a51;
+    border-radius: 9px;
+  }
+
+  .nav-group-toggle {
+    min-height: 40px;
+    padding: 9px 10px;
+  }
+
+  .nav-link {
+    margin: 2px 0;
+    padding: 9px 8px;
+    font-size: .8rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .side-navigation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .nav-group-toggle {
+    font-size: .76rem;
+  }
+
+  .nav-group-title {
+    gap: 6px;
+    font-size: .73rem;
+  }
 }

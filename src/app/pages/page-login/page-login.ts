@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { User } from '../../services/user/user';
 import { Router } from '@angular/router';
 import { AuthentificationRequest } from '../../api/models';
-import { switchMap, throwError } from 'rxjs';
+import { AuthentificationService } from '../../services/authentification/authentification-service';
 
 @Component({
   selector: 'app-page-login',
@@ -20,8 +20,10 @@ export class PageLogin {
 
   constructor(
     private userService: User,
-    private router : Router
-  ){}
+    private auth: AuthentificationService,
+    private router: Router
+  ) {}
+
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
@@ -37,18 +39,32 @@ export class PageLogin {
     }
 
     this.isSubmitting = true;
-    this.userService.login({ email, password }).pipe(
-      switchMap(response => {
+    this.auth.authenticate({ email, password }).subscribe({
+      next: response => {
         if (!response.accessToken) {
-          return throwError(() => new Error('Le serveur n’a pas retourné de jeton de connexion.'));
+          this.errorMessage = 'Le serveur n’a pas retourné de jeton de connexion.';
+          this.isSubmitting = false;
+          return;
         }
+
         this.userService.setConnectedUser(response);
-        return this.userService.getUserByEmail(email);
-      })
-    ).subscribe({
-      next: utilisateur => {
-        this.userService.setUtilisateur(utilisateur);
-        this.router.navigate(['/dashboard']);
+        this.userService.setUtilisateur({ email });
+        this.userService.getUserByEmail(email).subscribe({
+          next: utilisateur => {
+            this.userService.setUtilisateur(utilisateur);
+            this.router.navigate(['/dashboard']);
+          },
+          error: error => {
+            if (error instanceof HttpErrorResponse && error.status === 401) {
+              this.userService.clearSession();
+              this.errorMessage = 'Le serveur a refusé le jeton JWT. Vérifiez la configuration JWT de l’API, puis reconnectez-vous.';
+              this.isSubmitting = false;
+              return;
+            }
+            this.router.navigate(['/dashboard']);
+          }
+        });
+        this.isSubmitting = false;
       },
       error: error => {
         this.userService.clearSession();
@@ -65,4 +81,5 @@ export class PageLogin {
     }
     return error instanceof Error ? error.message : 'Une erreur est survenue lors de la connexion.';
   }
+
 }

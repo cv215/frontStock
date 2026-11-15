@@ -7,8 +7,10 @@ export interface EntrepriseDto {
   adresse?: AdresseDto;
   codeFiscale?: string;
   description?: string;
+  motDePasse?: string;
   email?: string;
   id?: number;
+  nomResponsable?: string;
   nom?: string;
   numTel?: string;
   photo?: string;

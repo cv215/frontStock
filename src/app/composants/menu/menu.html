@@ -1,42 +1,21 @@
-<div class="accordion accordion-flush" id="accordionFlushExample">
-  <div class="card" *ngFor="let menu of menuProperties">
-
-    <div class="accordion-item">
-
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed text-primary"
-          type="button"
-          data-bs-toggle="collapse"
-          [attr.data-bs-target]="'#flush-collapse' + menu.id"
-          aria-expanded="false"
-          [attr.aria-controls]="'flush-collapse' + menu.id">
-          <i class="{{ menu.icon }}"></i>&nbsp;
-          {{ menu.titre }}
-        </button>
-      </h2>
-
-      <!-- UN SEUL collapse -->
-      <div [id]="'flush-collapse' + menu.id"
-        class="accordion-collapse collapse"
-        data-bs-parent="#accordionFlushExample">
-
-        <!-- boucle ici -->
-        <div class="accordion-body">
-          <div class="card">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item" *ngFor="let sousMenu of menu.sousMenu" [ngClass]="{'text-white bg-primary': sousMenu.active, '': !sousMenu.active}">
-                <a href="javascript:void(0);" (click)="navigate(sousMenu)" style="color: inherit;">
-                  <i class="{{ sousMenu.icon }}"></i>&nbsp;
-                  {{ sousMenu.titre }}
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-      </div>
-
+<nav class="side-navigation" aria-label="Navigation principale">
+  <section class="nav-group" *ngFor="let menu of menuProperties">
+    <button class="nav-group-toggle" type="button" (click)="toggleMenu(menu)"
+      [attr.aria-expanded]="isExpanded(menu)"
+      [attr.aria-controls]="'menu-items-' + menu.id">
+      <span class="nav-group-title"><i [class]="menu.icon" aria-hidden="true"></i>{{ menu.titre }}</span>
+      <i class="bi bi-chevron-down nav-chevron" [class.rotated]="isExpanded(menu)" aria-hidden="true"></i>
+    </button>
+    <div class="nav-group-items" [id]="'menu-items-' + menu.id" *ngIf="isExpanded(menu)">
+      <a class="nav-link" *ngFor="let sousMenu of menu.sousMenu"
+        [routerLink]="['/dashboard', sousMenu.url]"
+        [queryParams]="sousMenu.queryParams"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="expandMenu(menu)">
+        <i [class]="sousMenu.icon" aria-hidden="true"></i>
+        <span>{{ sousMenu.titre }}</span>
+      </a>
     </div>
-
-  </div>
-</div>
+  </section>
+</nav>

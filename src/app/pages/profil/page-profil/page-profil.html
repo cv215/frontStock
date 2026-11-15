@@ -1,43 +1,23 @@
-<div class="row m-3">
-  <div class="card col-md-5 text-center">
-    <div class="col ms-3">
-      <div class="mb-3 mt-3">
-        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
-      </div>
-      <div class="mb-3">
-        <h2>Nom Prenom</h2>
-        <small class="form-text text-muted">Adresse, Ville, Code Postal</small>
-      </div>
-      <div class="col mb-3 p-0">
-        <button type="button" class="btn btn-primary me-3"><i class="bi bi-pencil-fill"></i>&nbsp; Modifier le profil</button>
-        <button type="button" class="btn btn-info btn-warning" (click)="modifierMotDePasse()"><i class="bi bi-lock-fill"></i>&nbsp; Changer le mot de passe</button>
-      </div>
-    </div>
+<section class="page-content profile-page">
+  <header class="page-heading"><div><p class="eyebrow">MON ESPACE</p><h1>Mon profil</h1><p class="page-description">Vos informations personnelles et votre espace entreprise.</p></div></header>
+  <div class="profile-layout" *ngIf="connectedUser as user">
+    <section class="profile-card">
+      <span class="profile-large-avatar">{{ (user.prenom || user.nom || 'U').charAt(0) }}</span>
+      <h2>{{ user.prenom }} {{ user.nom }}</h2>
+      <p>{{ user.email }}</p>
+      <span class="category-pill">{{ user.roles?.libelle || 'Utilisateur' }}</span>
+      <button type="button" class="btn btn-outline-primary" (click)="modifierMotDePasse()"><i class="bi bi-lock me-2"></i>Changer le mot de passe</button>
+    </section>
+    <section class="table-card profile-details">
+      <div class="section-title"><div><h2>Informations du compte</h2><p>Données associées à votre profil.</p></div></div>
+      <dl class="profile-data">
+        <div><dt>Nom complet</dt><dd>{{ user.prenom }} {{ user.nom }}</dd></div>
+        <div><dt>Adresse e-mail</dt><dd>{{ user.email || 'Non renseignée' }}</dd></div>
+        <div><dt>Téléphone</dt><dd>{{ user.entreprise?.numTel || 'Non renseigné' }}</dd></div>
+        <div><dt>Adresse</dt><dd>{{ user.adresse?.adresse1 || 'Non renseignée' }}<span *ngIf="user.adresse?.ville">, {{ user.adresse?.ville }}</span><span *ngIf="user.adresse?.pays">, {{ user.adresse?.pays }}</span></dd></div>
+        <div><dt>Entreprise</dt><dd>{{ user.entreprise?.nom || 'Espace personnel' }}</dd></div>
+      </dl>
+    </section>
   </div>
-  <div class="card col-md-7">
-    <table class="table">
-  <tbody>
-    <tr>
-      <th scope="row" class="border-end">Nom complet</th>
-      <td>nom, prenom</td>
-    </tr>
-    <tr>
-      <th scope="row" class="border-end">Email</th>
-      <td>jacob@example.com</td>
-    </tr>
-    <tr>
-      <th scope="row" class="border-end">Telephone</th>
-      <td>670246561</td>
-    </tr>
-     <tr>
-      <th scope="row" class="border-end">Adresse</th>
-      <td>Adresse, Ville, Code Postal</td>
-    </tr>
-     <tr>
-      <th scope="row" class="border-end">Entreprise</th>
-      <td>Nom de l'entreprise</td>
-    </tr>
-  </tbody>
-</table>
-  </div>
-</div>
+  <div class="empty-state table-card" *ngIf="!connectedUser"><i class="bi bi-person-x"></i><h2>Profil indisponible</h2><p>Reconnectez-vous pour charger les informations de votre compte.</p></div>
+</section>

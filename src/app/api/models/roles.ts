@@ -7,7 +7,7 @@ export interface Roles {
   id?: number;
   idEntreprise?: number;
   lastUpdateDate?: string;
-  libelle?: 'FOURNISSEUR' | 'CLIENT' | 'UTILISATEUR';
+  libelle?: 'FOURNISSEUR' | 'CLIENT' | 'UTILISATEUR' | 'ADMIN_ENTREPRISE' | 'GESTIONNAIRE' | 'COMMERCIAL';
   roleName?: string;
   utilisateur?: Utilisateur;
 }

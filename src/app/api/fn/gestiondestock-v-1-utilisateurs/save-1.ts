@@ -29,4 +29,4 @@ export function save1(http: HttpClient, rootUrl: string, params: Save1$Params, c
   );
 }
 
-save1.PATH = '/utilisateurs/inscription';
+save1.PATH = '/gestiondestock/v1/utilisateurs/inscription';

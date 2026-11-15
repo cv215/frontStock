@@ -1,75 +1,28 @@
-<div class="col mb-3">
-  <!--image du nouvel article-->
-  <div class="col-md-12 mb-3">
-    <img src="assets/pomme-de-terre-spunta-full-12961981.jpg"
-      class="rounded-circle" width="200px" height="200px">
-  </div>
-  <hr>
-  <!--le formulaire complet du nouvel article-->
-  <div class="col-md-12">
-    <div class="col-md-12 mb-3 ms-3">
-      <h2>
-        <i class="bi bi-info-circle-fill blow-color"></i>&nbsp; Information de l'utilisateur
-      </h2>
+<section class="page-content form-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">ESPACE DE TRAVAIL</p>
+      <h1>Nouvel utilisateur</h1>
+      <p class="page-description">Ajoutez un membre à votre équipe.</p>
     </div>
-    <div class="col-md-12">
-      <form>
-        <div class="row mb-3">
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Nom"
-              aria-label="First name">
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Addresse 1" aria-label="Last name">
-          </div>
-        </div>
+  </header>
 
-        <div class="row mb-3">
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Prenom" aria-label="First name">
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Addresse 2" aria-label="Last name">
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col">
-            <input type="text" class="form-control" placeholder="E-mail" aria-label="First name">
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Ville" aria-label="Last name">
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Telephone" aria-label="First name">
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Code postal" aria-label="Last name">
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col">
-            &nbsp;
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" placeholder="Pays" aria-label="Last name">
-          </div>
-        </div>
-      </form>
-
+  <form class="form-card" (ngSubmit)="enregistrerUtilisateur()">
+    <div class="form-section-heading"><span class="form-icon"><i class="bi bi-person-plus"></i></span><div><h2>Informations du compte</h2><p>Le mot de passe doit comporter au moins 8 caractères.</p></div></div>
+    <div class="form-grid">
+      <label class="form-field"><span>Nom <b>*</b></span><input class="form-control" name="nom" [(ngModel)]="utilisateurDto.nom" autocomplete="family-name" required></label>
+      <label class="form-field"><span>Prénom <b>*</b></span><input class="form-control" name="prenom" [(ngModel)]="utilisateurDto.prenom" autocomplete="given-name" required></label>
+      <label class="form-field"><span>Adresse e-mail <b>*</b></span><input class="form-control" type="email" name="email" [(ngModel)]="utilisateurDto.email" autocomplete="email" required></label>
+      <label class="form-field"><span>Mot de passe provisoire <b>*</b></span><input class="form-control" type="password" name="password" [(ngModel)]="utilisateurDto.motDePasse" autocomplete="new-password" minlength="8" required></label>
+      <label class="form-field"><span>Date de naissance</span><input class="form-control" type="date" name="dateNaissance" [(ngModel)]="utilisateurDto.dateNaissance"></label>
+      <label class="form-field"><span>Adresse</span><input class="form-control" name="adresse1" [(ngModel)]="adresse.adresse1" autocomplete="address-line1"></label>
+      <label class="form-field"><span>Ville</span><input class="form-control" name="ville" [(ngModel)]="adresse.ville" autocomplete="address-level2"></label>
+      <label class="form-field"><span>Pays</span><input class="form-control" name="pays" [(ngModel)]="adresse.pays" autocomplete="country-name"></label>
     </div>
-  </div>
-  <!--boutton de validation-->
-  <div class="col-md-12 text-end">
-    <button class="btn btn-danger ms-2" (click)="cancel()">
-      <i class="bi bi-x-circle"></i>&nbsp; Annuler
-    </button>
-    <button class="btn btn-primary ms-2">
-      <i class="bi bi-download"></i>&nbsp; Enregistrer
-    </button>
-  </div>
-</div>
+    <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
+    <div class="form-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="cancel()">Annuler</button>
+      <button class="btn btn-primary" type="submit" [disabled]="isSaving"><span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>{{ isSaving ? 'Enregistrement...' : 'Créer l’utilisateur' }}</button>
+    </div>
+  </form>
+</section>

@@ -1,5 +1,3 @@
-import { model } from "@angular/core";
-
 export interface MenuModel {
   id?: string;
   titre?: string;
@@ -7,4 +5,5 @@ export interface MenuModel {
   url?: string;
   active?: boolean;
   sousMenu?: Array<MenuModel>;
+  queryParams?: Record<string, string>;
 }

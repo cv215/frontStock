@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { CathegoryDto, EntrepriseDto } from '../../api/models';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +28,17 @@ export class CategoryService {
   }
 
   findAll(): Observable<CathegoryDto[]> {
-    return this.http.get<CathegoryDto[]>(`${this.apiUrl}/all`);
+    return this.http.get<CathegoryDto | CathegoryDto[]>(`${this.apiUrl}/all`).pipe(
+      map(response => {
+        if (Array.isArray(response)) {
+          return response;
+        }
+        if (response && typeof response === 'object') {
+          return [response];
+        }
+        throw new Error('La réponse de l’API des catégories est invalide.');
+      })
+    );
   }
 
   delete(id: number): Observable<void> {

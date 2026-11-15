@@ -1,1 +1,121 @@
-<h1>Page Vue D'ensemble</h1>
+<ng-container *ngIf="isClient; else businessDashboard">
+  <section class="page-content client-overview">
+    <header class="client-welcome">
+      <div>
+        <p class="eyebrow">ESPACE CLIENT</p>
+        <h1>Vos achats, simplement.</h1>
+        <p class="page-description">Suivez vos commandes, vos livraisons et vos fournisseurs depuis un seul espace.</p>
+      </div>
+      <a class="btn client-primary-button" [routerLink]="['/dashboard/nouvellecommandeclt']"><i class="bi bi-plus-lg me-2"></i>Nouvelle commande</a>
+    </header>
+
+    <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
+    <div class="client-stats-grid" *ngIf="!isLoading">
+      <a class="client-stat-card" [routerLink]="['/dashboard/commandeclient']">
+        <span class="client-stat-heading"><i class="bi bi-cart3"></i><small>VOTRE ACTIVITÉ</small></span>
+        <span class="client-stat-label">Commandes en cours</span><strong>{{ clientOrdersInProgress }}</strong>
+        <small class="client-stat-note">{{ clientOrdersInProgress ? 'Vos commandes sont suivies ici' : 'Aucune commande active' }}</small>
+      </a>
+      <a class="client-stat-card" [routerLink]="['/dashboard/commandeclient']" [queryParams]="{ etat: 'LIVREE' }">
+        <span class="client-stat-heading"><i class="bi bi-truck"></i><small>LIVRAISONS</small></span>
+        <span class="client-stat-label">Livraisons effectuées</span><strong>{{ clientDeliveriesCompleted }}</strong>
+        <small class="client-stat-note">{{ clientDeliveriesExpected }} commande{{ clientDeliveriesExpected === 1 ? '' : 's' }} à livrer</small>
+      </a>
+      <a class="client-stat-card" [routerLink]="['/dashboard/articles']">
+        <span class="client-stat-heading"><i class="bi bi-box-seam"></i><small>CATALOGUE</small></span>
+        <span class="client-stat-label">Articles disponibles</span><strong>{{ articles.length }}</strong>
+        <small class="client-stat-note">Parcourir les produits</small>
+      </a>
+      <a class="client-stat-card" [routerLink]="['/dashboard/fournisseurs']">
+        <span class="client-stat-heading"><i class="bi bi-people"></i><small>PARTENAIRES</small></span>
+        <span class="client-stat-label">Fournisseurs</span><strong>{{ fournisseurs.length }}</strong>
+        <small class="client-stat-note">{{ fournisseurs.length ? 'Vos partenaires enregistrés' : 'Aucun partenaire disponible' }}</small>
+      </a>
+    </div>
+
+    <div class="client-dashboard-panels">
+      <section class="client-panel client-orders-panel">
+        <header class="client-panel-heading">
+          <div><h2>Commandes récentes</h2><p>Vos dernières opérations apparaissent ici.</p></div>
+          <a [routerLink]="['/dashboard/commandeclient']">Tout afficher <i class="bi bi-chevron-right"></i></a>
+        </header>
+        <div class="loading-state client-loading" *ngIf="isLoading"><span class="spinner-border spinner-border-sm"></span> Chargement de votre espace...</div>
+        <div class="table-responsive" *ngIf="!isLoading && recentClientOrders.length">
+          <table class="table client-orders-table align-middle mb-0">
+            <thead><tr><th>Commande</th><th>Date</th><th>Référence</th><th>Statut</th></tr></thead>
+            <tbody><tr *ngFor="let commande of recentClientOrders">
+              <td><strong>{{ commande.code || 'Commande' }}</strong></td>
+              <td>{{ commande.dateCommande | date:'dd/MM/yyyy' }}</td>
+              <td>{{ commande.id ? '#' + commande.id : '—' }}</td>
+              <td><span class="client-order-status" [class.status-delivered]="commande.etatCommande === 'LIVREE' || commande.commandeLivree">{{ commande.etatCommande === 'LIVREE' || commande.commandeLivree ? 'Livrée' : commande.etatCommande === 'VALIDE' ? 'À livrer' : 'En cours' }}</span></td>
+            </tr></tbody>
+          </table>
+        </div>
+        <div class="client-empty-orders" *ngIf="!isLoading && recentClientOrders.length === 0">
+          <span class="client-empty-icon"><i class="bi bi-box"></i></span>
+          <h3>Aucune commande pour le moment</h3>
+          <p>Parcourez le catalogue ou contactez un fournisseur pour passer votre première commande.</p>
+          <a [routerLink]="['/dashboard/articles']">Découvrir le catalogue</a>
+        </div>
+      </section>
+
+      <aside class="client-panel quick-start-panel">
+        <header class="client-panel-heading"><div><h2>Démarrage rapide</h2><p>Quelques étapes pour bien commencer.</p></div></header>
+        <div class="setup-progress-track"><span [style.width.%]="setupProgress"></span></div>
+        <p class="setup-progress-label">{{ setupStepsCompleted }} étape{{ setupStepsCompleted === 1 ? '' : 's' }} sur 3 terminée{{ setupStepsCompleted === 1 ? '' : 's' }}</p>
+        <a class="setup-step" [routerLink]="['/dashboard/profil']"><span [class.step-complete]="profileComplete">{{ profileComplete ? '✓' : '1' }}</span><strong>Compléter votre profil</strong><i class="bi bi-chevron-right"></i></a>
+        <a class="setup-step" [routerLink]="['/dashboard/articles']"><span [class.step-complete]="articles.length > 0">{{ articles.length ? '✓' : '2' }}</span><strong>Parcourir le catalogue</strong><i class="bi bi-chevron-right"></i></a>
+        <a class="setup-step" [routerLink]="['/dashboard/nouvellecommandeclt']"><span [class.step-complete]="clientOrders.length > 0">{{ clientOrders.length ? '✓' : '3' }}</span><strong>Créer votre première commande</strong><i class="bi bi-chevron-right"></i></a>
+        <div class="client-support-card"><strong>Besoin d’aide ?</strong><p>Notre équipe vous accompagne dans la prise en main.</p><a href="mailto:support@stockly.fr">Contacter le support</a></div>
+      </aside>
+    </div>
+  </section>
+</ng-container>
+
+<ng-template #businessDashboard>
+<section class="page-content overview-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">TABLEAU DE BORD</p>
+      <h1>Vue d’ensemble</h1>
+      <p class="page-description">Un aperçu rapide de votre activité et de votre catalogue.</p>
+    </div>
+    <a class="btn btn-primary" [routerLink]="['/dashboard/nouvelarticle']"><i class="bi bi-plus-lg me-2"></i>Nouvel article</a>
+  </header>
+
+  <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
+  <div class="overview-grid" *ngIf="!isLoading">
+    <a class="overview-card" [routerLink]="['/dashboard/articles']">
+      <span class="overview-icon blue"><i class="bi bi-box-seam"></i></span>
+      <span class="overview-label">Articles</span><strong>{{ articles.length }}</strong>
+      <small>Voir le catalogue <i class="bi bi-arrow-up-right"></i></small>
+    </a>
+    <a class="overview-card" [routerLink]="['/dashboard/clients']">
+      <span class="overview-icon violet"><i class="bi bi-people"></i></span>
+      <span class="overview-label">Clients</span><strong>{{ clients.length }}</strong>
+      <small>Gérer les clients <i class="bi bi-arrow-up-right"></i></small>
+    </a>
+    <a class="overview-card" [routerLink]="['/dashboard/fournisseurs']">
+      <span class="overview-icon orange"><i class="bi bi-truck"></i></span>
+      <span class="overview-label">Fournisseurs</span><strong>{{ fournisseurs.length }}</strong>
+      <small>Gérer les fournisseurs <i class="bi bi-arrow-up-right"></i></small>
+    </a>
+    <a class="overview-card" [routerLink]="['/dashboard/commandeclient']">
+      <span class="overview-icon green"><i class="bi bi-cart-check"></i></span>
+      <span class="overview-label">Commandes clients en cours</span><strong>{{ commandesEnCours }}</strong>
+      <small>{{ commandesClient.length }} commande{{ commandesClient.length === 1 ? '' : 's' }} au total <i class="bi bi-arrow-up-right"></i></small>
+    </a>
+  </div>
+  <div class="table-card overview-list">
+    <div class="section-title"><div><h2>Catalogue récent</h2><p>Articles disponibles dans votre espace.</p></div><a [routerLink]="['/dashboard/articles']">Tout voir <i class="bi bi-arrow-right"></i></a></div>
+    <div class="loading-state" *ngIf="isLoading"><span class="spinner-border spinner-border-sm"></span> Mise à jour du tableau de bord...</div>
+    <div class="empty-state" *ngIf="!isLoading && !errorMessage && articles.length === 0"><i class="bi bi-box-seam"></i><h2>Aucun article</h2><p>Ajoutez votre premier article pour commencer.</p></div>
+    <div class="table-responsive" *ngIf="!isLoading && articles.length > 0">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Article</th><th>Catégorie</th><th class="text-end">Prix TTC</th></tr></thead>
+        <tbody><tr *ngFor="let article of recentArticles"><td><strong>{{ article.designation || 'Sans désignation' }}</strong><small>{{ article.codeArticle }}</small></td><td>{{ article.cathegory?.designation || '—' }}</td><td class="text-end">{{ article.prixUnitaireTtc | number:'1.0-2' }} XAF</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</ng-template>
