@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8081/gestiondestock/v1'
+  apiUrl: 'https://gestionback-4.onrender.com/gestiondestock/v1'
 };
