@@ -37,7 +37,7 @@
           <tr *ngFor="let utilisateur of pagedUtilisateurs">
             <td><div class="person-cell"><span class="avatar">{{ (utilisateur.prenom || utilisateur.nom || 'U').charAt(0) }}</span><div><strong>{{ utilisateur.prenom }} {{ utilisateur.nom }}</strong><small>Utilisateur #{{ utilisateur.id }}</small></div></div></td>
             <td><a *ngIf="utilisateur.email" [href]="'mailto:' + utilisateur.email">{{ utilisateur.email }}</a><span *ngIf="!utilisateur.email" class="muted-value">E-mail non renseigné</span></td>
-            <td><span class="category-pill">{{ utilisateur.roles?.libelle || 'Membre' }}</span></td>
+            <td><span class="category-pill">{{ roleLabel(utilisateur, 'Membre') }}</span></td>
             <td><span class="status-pill" [class.status-inactive]="utilisateur.actif === false"><i class="bi bi-circle-fill"></i>{{ utilisateur.actif === false ? 'Inactif' : 'Actif' }}</span></td>
             <td class="text-end">
               <ng-container *ngIf="utilisateur.id !== connectedUserId && deleteCandidateId !== utilisateur.id; else confirmDelete">

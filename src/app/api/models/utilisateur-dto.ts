@@ -3,26 +3,18 @@
 
 import { AdresseDto } from '../models/adresse-dto';
 import { EntrepriseDto } from '../models/entreprise-dto';
-import { GrantedAuthority } from '../models/granted-authority';
 import { Roles } from '../models/roles';
 export interface UtilisateurDto {
-  accountNonExpired?: boolean;
-  accountNonLocked?: boolean;
   actif?: boolean;
   adresse?: AdresseDto;
-  authorities?: Array<GrantedAuthority>;
-  credentialsNonExpired?: boolean;
   dateNaissance?: string;
   email?: string;
-  enabled?: boolean;
   entreprise?: EntrepriseDto;
   id?: number;
   idEntreprise?: number;
   motDePasse?: string;
   nom?: string;
-  password?: string;
   photo?: string;
   prenom?: string;
-  roles?: Roles;
-  username?: string;
+  roles?: Array<Roles>;
 }

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { User } from '../../services/user/user';
+import { isClientUser } from '../../utils/user-roles';
 
 @Component({
   selector: 'app-page-dashboard',
@@ -13,7 +14,7 @@ export class PageDashboard {
   constructor(private readonly userService: User) {}
 
   get isClient(): boolean {
-    return this.userService.getConnectedUser()?.roles?.libelle === 'CLIENT';
+    return isClientUser(this.userService.getConnectedUser());
   }
 
   get connectedUserName(): string {

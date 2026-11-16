@@ -1,8 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ArticleDto } from '../../../api/models';
 import { ArticleService } from '../../../services/article/article-service';
+import { getHttpErrorMessage } from '../../../utils/http-error';
 
 @Component({
   selector: 'app-page-article',
@@ -94,17 +94,7 @@ export class PageArticle implements OnInit {
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim()) {
-        return error.error;
-      }
-      if (error.error && typeof error.error === 'object' && 'message' in error.error
-        && typeof error.error.message === 'string') {
-        return error.error.message;
-      }
-      return error.status === 0 ? 'Le serveur est indisponible. Réessayez plus tard.' : fallback;
-    }
-    return fallback;
+    return getHttpErrorMessage(error, fallback);
   }
 
 }

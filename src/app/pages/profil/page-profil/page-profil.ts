@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UtilisateurDto } from '../../../api/models';
 import { User } from '../../../services/user/user';
+import { roleLabel } from '../../../utils/user-roles';
 
 @Component({
   selector: 'app-page-profil',
@@ -11,6 +12,7 @@ import { User } from '../../../services/user/user';
 })
 export class PageProfil implements OnInit {
   connectedUser: UtilisateurDto | null = null;
+  readonly roleLabel = roleLabel;
 
   constructor(
     private router: Router,

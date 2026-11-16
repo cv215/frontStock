@@ -1,9 +1,9 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ArticleDto, MvstkDto } from '../../../api/models';
 import { ArticleService } from '../../../services/article/article-service';
 import { MvstkService } from '../../../services/mouvementStock/mvstk-service';
 import { User } from '../../../services/user/user';
+import { getHttpErrorMessage } from '../../../utils/http-error';
 
 type MouvementType = NonNullable<MvstkDto['typeMvstkt']>;
 
@@ -135,16 +135,6 @@ export class PageMvtstk implements OnInit {
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim()) {
-        return error.error;
-      }
-      if (error.error && typeof error.error === 'object' && 'message' in error.error
-        && typeof error.error.message === 'string') {
-        return error.error.message;
-      }
-      return error.status === 0 ? 'Le serveur est indisponible. Réessayez plus tard.' : fallback;
-    }
-    return fallback;
+    return getHttpErrorMessage(error, fallback);
   }
 }

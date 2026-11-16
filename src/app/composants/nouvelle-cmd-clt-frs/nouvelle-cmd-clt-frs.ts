@@ -1,12 +1,20 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ClientDto, CommandeClientDto, CommandeFournisseurDto, FournisseurDto } from '../../api/models';
+import { forkJoin, Observable } from 'rxjs';
+import { ArticleDto, ClientDto, CommandeClientDto, CommandeFournisseurDto, FournisseurDto } from '../../api/models';
+import { ArticleService } from '../../services/article/article-service';
 import { ClientService } from '../../services/client/client-service';
 import { CommandeClientService } from '../../services/commandeClient/commande-client-service';
 import { CommandeFournisseurService } from '../../services/commandeFournisseur/commande-fournisseur-service';
 import { FournisseurService } from '../../services/fournisseur/fournisseur-service';
 import { User } from '../../services/user/user';
+import { getHttpErrorMessage } from '../../utils/http-error';
+
+interface LigneSaisie {
+  article: ArticleDto;
+  quantite: number;
+  prixUnitaire: number;
+}
 
 @Component({
   selector: 'app-nouvelle-cmd-clt-frs',
@@ -15,12 +23,18 @@ import { User } from '../../services/user/user';
   styleUrl: './nouvelle-cmd-clt-frs.css',
 })
 export class NouvelleCmdCltFrs implements OnInit {
-   origin = "";
+  origin = '';
   clients: ClientDto[] = [];
   fournisseurs: FournisseurDto[] = [];
+  articles: ArticleDto[] = [];
   code = '';
   dateCommande = new Date().toISOString().slice(0, 10);
   partnerId: number | null = null;
+
+  lignes: LigneSaisie[] = [];
+  articleIdToAdd: number | null = null;
+  quantiteToAdd: number | null = 1;
+
   errorMessage = '';
   isLoading = true;
   isSaving = false;
@@ -30,6 +44,7 @@ export class NouvelleCmdCltFrs implements OnInit {
     private activatedRoute: ActivatedRoute,
     private clientService: ClientService,
     private fournisseurService: FournisseurService,
+    private articleService: ArticleService,
     private commandeClientService: CommandeClientService,
     private commandeFournisseurService: CommandeFournisseurService,
     private userService: User
@@ -37,23 +52,60 @@ export class NouvelleCmdCltFrs implements OnInit {
 
   ngOnInit(): void {
     this.origin = this.activatedRoute.snapshot.data['origin'] === 'fournisseur' ? 'fournisseur' : 'client';
-    if (this.origin === 'client') {
-      this.clientService.findAll().subscribe({
-        next: clients => {
-          this.clients = clients ?? [];
-          this.isLoading = false;
-        },
-        error: error => this.handleLoadError(error)
-      });
-    } else {
-      this.fournisseurService.findAll().subscribe({
-        next: fournisseurs => {
-          this.fournisseurs = fournisseurs ?? [];
-          this.isLoading = false;
-        },
-        error: error => this.handleLoadError(error)
-      });
+    this.code = this.generateCode();
+    const contacts$: Observable<ClientDto[] | FournisseurDto[]> = this.origin === 'client'
+      ? this.clientService.findAll()
+      : this.fournisseurService.findAll();
+    forkJoin({ contacts: contacts$, articles: this.articleService.findAll() }).subscribe({
+      next: ({ contacts, articles }) => {
+        if (this.origin === 'client') {
+          this.clients = (contacts ?? []) as ClientDto[];
+        } else {
+          this.fournisseurs = (contacts ?? []) as FournisseurDto[];
+        }
+        this.articles = articles ?? [];
+        this.isLoading = false;
+      },
+      error: error => {
+        this.errorMessage = getHttpErrorMessage(error, 'Impossible de charger les contacts et les articles.');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  get contactsCount(): number {
+    return this.origin === 'client' ? this.clients.length : this.fournisseurs.length;
+  }
+
+  get availableArticles(): ArticleDto[] {
+    return this.articles.filter(article => !this.lignes.some(ligne => ligne.article.id === article.id));
+  }
+
+  get total(): number {
+    return this.lignes.reduce((sum, ligne) => sum + ligne.quantite * ligne.prixUnitaire, 0);
+  }
+
+  ajouterLigne(): void {
+    this.errorMessage = '';
+    const article = this.articles.find(item => item.id === this.articleIdToAdd);
+    const quantite = Number(this.quantiteToAdd);
+    if (!article) {
+      this.errorMessage = 'Sélectionnez un article à ajouter.';
+      return;
     }
+    if (!Number.isFinite(quantite) || quantite <= 0) {
+      this.errorMessage = 'La quantité doit être supérieure à zéro.';
+      return;
+    }
+    // Commande client : prix de vente TTC ; commande fournisseur : prix d'achat HT.
+    const prix = this.origin === 'client' ? article.prixUnitaireTtc : article.prixUnitaireHt;
+    this.lignes = [...this.lignes, { article, quantite, prixUnitaire: Number(prix ?? 0) }];
+    this.articleIdToAdd = null;
+    this.quantiteToAdd = 1;
+  }
+
+  supprimerLigne(index: number): void {
+    this.lignes = this.lignes.filter((_, i) => i !== index);
   }
 
   cancelClick(): void {
@@ -67,12 +119,25 @@ export class NouvelleCmdCltFrs implements OnInit {
       this.errorMessage = 'Le code, la date et le contact associé sont obligatoires.';
       return;
     }
-
+    if (this.lignes.length === 0) {
+      this.errorMessage = 'Ajoutez au moins un article à la commande.';
+      return;
+    }
+    if (this.lignes.some(ligne => !(ligne.quantite > 0))) {
+      this.errorMessage = 'Chaque quantité doit être supérieure à zéro.';
+      return;
+    }
     const utilisateur = this.userService.getConnectedUser();
     const idEntreprise = utilisateur?.idEntreprise ?? utilisateur?.entreprise?.id;
     const dateIso = new Date(`${this.dateCommande}T00:00:00`).toISOString();
-    this.isSaving = true;
+    const lignes = this.lignes.map(ligne => ({
+      article: { id: ligne.article.id },
+      quantite: Number(ligne.quantite),
+      prixUnitaire: Number(ligne.prixUnitaire),
+      ...(idEntreprise != null ? { idEntreprise } : {})
+    }));
 
+    this.isSaving = true;
     if (this.origin === 'client') {
       const client = this.clients.find(item => item.id === this.partnerId);
       if (!client) {
@@ -84,7 +149,8 @@ export class NouvelleCmdCltFrs implements OnInit {
         code,
         dateCommande: dateIso,
         etatCommande: 'EN_COURS',
-        client,
+        client: { id: client.id },
+        ligneCommandeClients: lignes,
         ...(idEntreprise != null ? { idEntreprise } : {})
       };
       this.commandeClientService.save(commande).subscribe({
@@ -104,7 +170,8 @@ export class NouvelleCmdCltFrs implements OnInit {
       code,
       dateCommande: dateIso,
       etatCommande: 'EN_COURS',
-      fournisseur,
+      fournisseur: { id: fournisseur.id },
+      ligneCommandeFournisseurs: lignes,
       ...(idEntreprise != null ? { idEntreprise } : {})
     };
     this.commandeFournisseurService.save(commande).subscribe({
@@ -113,8 +180,11 @@ export class NouvelleCmdCltFrs implements OnInit {
     });
   }
 
-  get contactsCount(): number {
-    return this.origin === 'client' ? this.clients.length : this.fournisseurs.length;
+  private generateCode(): string {
+    const prefix = this.origin === 'client' ? 'CC' : 'CF';
+    const now = new Date();
+    const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+    return `${prefix}-${stamp}-${Math.floor(1000 + Math.random() * 9000)}`;
   }
 
   private goToOrders(): void {
@@ -124,25 +194,6 @@ export class NouvelleCmdCltFrs implements OnInit {
 
   private handleSaveError(error: unknown): void {
     this.isSaving = false;
-    this.errorMessage = this.getErrorMessage(error, 'La création de la commande a échoué.');
-  }
-
-  private handleLoadError(error: unknown): void {
-    this.errorMessage = this.getErrorMessage(error, 'Impossible de charger les contacts.');
-    this.isLoading = false;
-  }
-
-  private getErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim()) {
-        return error.error;
-      }
-      if (error.error && typeof error.error === 'object' && 'message' in error.error
-        && typeof error.error.message === 'string') {
-        return error.error.message;
-      }
-      return error.status === 0 ? 'Le serveur est indisponible. Réessayez plus tard.' : fallback;
-    }
-    return fallback;
+    this.errorMessage = getHttpErrorMessage(error, 'La création de la commande a échoué.');
   }
 }

@@ -13,12 +13,12 @@
       <label class="form-field"><span>Nom <b>*</b></span><input class="form-control" name="nom" [(ngModel)]="nom" autocomplete="family-name" required></label>
       <label class="form-field"><span>Prénom <b>*</b></span><input class="form-control" name="prenom" [(ngModel)]="prenom" autocomplete="given-name" required></label>
       <label class="form-field"><span>Adresse e-mail <b>*</b></span><input class="form-control" type="email" name="email" [(ngModel)]="email" autocomplete="email" required></label>
-      <label class="form-field"><span>Téléphone</span><input class="form-control" type="tel" name="telephone" [(ngModel)]="telephone" autocomplete="tel"></label>
-      <label class="form-field"><span>Adresse</span><input class="form-control" name="adresse1" [(ngModel)]="adresse.adresse1" autocomplete="address-line1"></label>
+      <label class="form-field"><span>Téléphone <b>*</b></span><input class="form-control" type="tel" name="telephone" [(ngModel)]="telephone" autocomplete="tel" required></label>
+      <label class="form-field"><span>Adresse <b>*</b></span><input class="form-control" name="adresse1" [(ngModel)]="adresse.adresse1" autocomplete="address-line1" required></label>
       <label class="form-field"><span>Complément d’adresse</span><input class="form-control" name="adresse2" [(ngModel)]="adresse.adresse2" autocomplete="address-line2"></label>
-      <label class="form-field"><span>Ville</span><input class="form-control" name="ville" [(ngModel)]="adresse.ville" autocomplete="address-level2"></label>
+      <label class="form-field"><span>Ville <b>*</b></span><input class="form-control" name="ville" [(ngModel)]="adresse.ville" autocomplete="address-level2" required></label>
       <label class="form-field"><span>Code postal</span><input class="form-control" name="codePostale" [(ngModel)]="adresse.codePostale" autocomplete="postal-code"></label>
-      <label class="form-field"><span>Pays</span><input class="form-control" name="pays" [(ngModel)]="adresse.pays" autocomplete="country-name"></label>
+      <label class="form-field"><span>Pays <b>*</b></span><input class="form-control" name="pays" [(ngModel)]="adresse.pays" autocomplete="country-name" required></label>
     </div>
     <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
     <div class="form-actions">

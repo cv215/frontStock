@@ -1,4 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { getHttpErrorMessage } from '../../../utils/http-error';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdresseDto, UtilisateurDto } from '../../../api/models';
@@ -36,6 +36,10 @@ export class NouvelUtilisateur implements OnInit {
     const prenom = this.utilisateurDto.prenom?.trim() ?? '';
     const email = this.utilisateurDto.email?.trim().toLowerCase() ?? '';
     const motDePasse = this.utilisateurDto.motDePasse ?? '';
+    if (!this.adresse.adresse1?.trim() || !this.adresse.ville?.trim() || !this.adresse.pays?.trim()) {
+      this.errorMessage = 'Renseignez l’adresse, la ville et le pays.';
+      return;
+    }
     if (!nom || !prenom || !email || motDePasse.length < 8) {
       this.errorMessage = 'Renseignez le nom, le prénom, l’adresse e-mail et un mot de passe d’au moins 8 caractères.';
       return;
@@ -50,7 +54,7 @@ export class NouvelUtilisateur implements OnInit {
       email,
       adresse: this.adresse,
       actif: true,
-      roles: { libelle: 'UTILISATEUR' },
+      roles: [{ libelle: 'UTILISATEUR' }],
       ...(idEntreprise != null ? { idEntreprise } : {})
     };
 
@@ -65,16 +69,6 @@ export class NouvelUtilisateur implements OnInit {
   }
 
   private getErrorMessage(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim()) {
-        return error.error;
-      }
-      if (error.error && typeof error.error === 'object' && 'message' in error.error
-        && typeof error.error.message === 'string') {
-        return error.error.message;
-      }
-      return error.status === 0 ? 'Le serveur est indisponible. Réessayez plus tard.' : 'L’enregistrement de l’utilisateur a échoué.';
-    }
-    return 'L’enregistrement de l’utilisateur a échoué.';
+    return getHttpErrorMessage(error, 'L’enregistrement de l’utilisateur a échoué.');
   }
 }

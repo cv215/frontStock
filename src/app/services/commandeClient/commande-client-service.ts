@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { CommandeClientDto } from '../../api/models';
+import { CommandeClientDto, LigneCommandeClientDto } from '../../api/models';
 import { Observable } from 'rxjs';
+
+export type EtatCommande = 'EN_COURS' | 'VALIDE' | 'LIVREE';
 
 @Injectable({
   providedIn: 'root',
@@ -22,39 +24,39 @@ export class CommandeClientService {
     return this.http.get<CommandeClientDto>(`${this.apiUrl}/${idCommandeClient}`);
   }
 
-  updateArticle(idCommande: number,idLigneCommande: number,idArticle: number): Observable<CommandeClientDto> {
-    return this.http.get<CommandeClientDto>(`${this.apiUrl}/update/article/${idCommande}/${idLigneCommande}/${idArticle}`);
-  }
-
   findByCode(codeCommandeClient: string): Observable<CommandeClientDto> {
-    return this.http.get<CommandeClientDto>(`${this.apiUrl}/${codeCommandeClient}`);
+    return this.http.get<CommandeClientDto>(`${this.apiUrl}/code/${encodeURIComponent(codeCommandeClient)}`);
   }
 
-  updateClient(idCommande: number,idClient: number): Observable<CommandeClientDto> {
-    return this.http.get<CommandeClientDto>(`${this.apiUrl}/update/client/${idCommande}/${idClient}`);
+  updateArticle(idCommande: number, idLigneCommande: number, idArticle: number): Observable<CommandeClientDto> {
+    return this.http.patch<CommandeClientDto>(`${this.apiUrl}/update/article/${idCommande}/${idLigneCommande}/${idArticle}`, null);
   }
 
-  updateEtatCommande(idCommande: number,etatCommande: 'EN_COURS' | 'VALIDE' | 'LIVREE'): Observable<CommandeClientDto> {
-    return this.http.get<CommandeClientDto>(`${this.apiUrl}/update/etat/${idCommande}/${etatCommande}`);
+  updateClient(idCommande: number, idClient: number): Observable<CommandeClientDto> {
+    return this.http.patch<CommandeClientDto>(`${this.apiUrl}/update/client/${idCommande}/${idClient}`, null);
   }
 
-  updateQuantiteCommande(idCommande: number,idLigneCommande: number,quantite: number): Observable<CommandeClientDto> {
-    return this.http.get<CommandeClientDto>(`${this.apiUrl}/update/quantite/${idCommande}/${idLigneCommande}/${quantite}`);
+  updateEtatCommande(idCommande: number, etatCommande: EtatCommande): Observable<CommandeClientDto> {
+    return this.http.patch<CommandeClientDto>(`${this.apiUrl}/update/etat/${idCommande}/${etatCommande}`, null);
+  }
+
+  updateQuantiteCommande(idCommande: number, idLigneCommande: number, quantite: number): Observable<CommandeClientDto> {
+    return this.http.patch<CommandeClientDto>(`${this.apiUrl}/update/quantite/${idCommande}/${idLigneCommande}/${quantite}`, null);
   }
 
   findAll(): Observable<CommandeClientDto[]> {
     return this.http.get<CommandeClientDto[]>(`${this.apiUrl}/all`);
   }
 
-   findAllLigneCommandeClient(idCommande: number): Observable<CommandeClientDto[]> {
-    return this.http.get<CommandeClientDto[]>(`${this.apiUrl}/lignesCommande/${idCommande}`);
+  findAllLigneCommandeClient(idCommande: number): Observable<LigneCommandeClientDto[]> {
+    return this.http.get<LigneCommandeClientDto[]>(`${this.apiUrl}/lignesCommande/${idCommande}`);
   }
 
   delete(idCommandeClient: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${idCommandeClient}`);
   }
 
-   deleteArticle(idCommande: number,idLigneCommande: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/delete/article/${idCommande}/${idLigneCommande}`);
+  deleteArticle(idCommande: number, idLigneCommande: number): Observable<CommandeClientDto> {
+    return this.http.delete<CommandeClientDto>(`${this.apiUrl}/delete/article/${idCommande}/${idLigneCommande}`);
   }
 }

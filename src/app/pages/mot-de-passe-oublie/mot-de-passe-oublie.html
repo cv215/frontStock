@@ -47,8 +47,8 @@
 
       <ng-template #confirmation>
         <div class="step-icon step-icon--green" aria-hidden="true"><i class="bi bi-envelope-check"></i></div>
-        <h1 id="sent-title">Consultez vos e-mails</h1>
-        <p class="intro">La demande a été transmise au serveur pour l’adresse suivante :</p>
+        <h1 id="sent-title">Demande enregistrée</h1>
+        <p class="intro">Si un compte existe pour l’adresse suivante, la demande de réinitialisation a été enregistrée :</p>
         <div class="inline-alert" role="alert" *ngIf="errorMessage">{{ errorMessage }}</div>
         <div class="email-confirmation">
           <i class="bi bi-check-circle" aria-hidden="true"></i>
@@ -56,8 +56,8 @@
         </div>
 
         <ol class="next-steps">
-          <li><span class="step-number">1</span><span>Consultez votre messagerie si votre compte est associé à cette adresse.</span></li>
-          <li><span class="step-number">2</span><span>Suivez les instructions du message pour continuer.</span></li>
+          <li><span class="step-number">1</span><span>L’administrateur de votre entreprise peut réinitialiser votre mot de passe.</span></li>
+          <li><span class="step-number">2</span><span>Une fois connecté, changez-le depuis Mon profil &gt; Changer le mot de passe.</span></li>
         </ol>
 
         <button class="primary-button mailbox-button" type="button" (click)="openMailbox()">

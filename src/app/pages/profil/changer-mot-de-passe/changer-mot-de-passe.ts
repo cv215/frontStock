@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+import { UtilisateurService } from '../../../services/utilisateur/utilisateur-service';
+import { getHttpErrorMessage } from '../../../utils/http-error';
 
-interface ChangerMotDePasseUtilisateurDto {
+interface ChangerMotDePasseForm {
   nouveauMotDePasse?: string;
   confirmerMotDePasse?: string;
 }
@@ -12,39 +15,52 @@ interface ChangerMotDePasseUtilisateurDto {
   templateUrl: './changer-mot-de-passe.html',
   styleUrl: './changer-mot-de-passe.css',
 })
-export class ChangerMotDePasse implements OnInit {
-  changerMotDePasse: ChangerMotDePasseUtilisateurDto = {};
+export class ChangerMotDePasse {
+  changerMotDePasse: ChangerMotDePasseForm = {};
   ancienMotDePasse = '';
   errorMessage = '';
+  successMessage = '';
+  isSaving = false;
 
   constructor(
-    private router: Router
+    private router: Router,
+    private utilisateurService: UtilisateurService
   ) { }
-
-  ngOnInit(): void {
-  }
 
   changerMotDePasseUtilisateur(): void {
     this.errorMessage = '';
-    const nouveauMotDePasse = this.changerMotDePasse.nouveauMotDePasse?.trim() ?? '';
-    const confirmerMotDePasse = this.changerMotDePasse.confirmerMotDePasse?.trim() ?? '';
-
+    this.successMessage = '';
+    const nouveauMotDePasse = this.changerMotDePasse.nouveauMotDePasse ?? '';
+    const confirmerMotDePasse = this.changerMotDePasse.confirmerMotDePasse ?? '';
     if (!this.ancienMotDePasse || !nouveauMotDePasse || !confirmerMotDePasse) {
       this.errorMessage = 'Tous les champs sont obligatoires.';
       return;
     }
-
     if (nouveauMotDePasse.length < 8) {
       this.errorMessage = 'Le nouveau mot de passe doit comporter au moins 8 caractères.';
       return;
     }
-
     if (nouveauMotDePasse !== confirmerMotDePasse) {
       this.errorMessage = 'Les deux nouveaux mots de passe ne correspondent pas.';
       return;
     }
-
-    this.errorMessage = 'La modification du mot de passe n’est pas encore prise en charge par l’API. Contactez un administrateur.';
+    if (nouveauMotDePasse === this.ancienMotDePasse) {
+      this.errorMessage = 'Le nouveau mot de passe doit être différent de l’ancien.';
+      return;
+    }
+    this.isSaving = true;
+    this.utilisateurService.changerMotDePasse({
+      ancienMotDePasse: this.ancienMotDePasse,
+      nouveauMotDePasse,
+      confirmerMotDePasse
+    }).pipe(finalize(() => this.isSaving = false)).subscribe({
+      next: () => {
+        this.ancienMotDePasse = '';
+        this.changerMotDePasse = {};
+        this.successMessage = 'Votre mot de passe a été modifié.';
+      },
+      error: error => this.errorMessage = getHttpErrorMessage(error, 'La modification du mot de passe a échoué.')
+    });
   }
 
   cancel(): void {

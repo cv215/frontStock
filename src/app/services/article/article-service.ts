@@ -18,8 +18,8 @@ export class ArticleService {
     return this.http.post<ArticleDto>(`${this.apiUrl}/create`, article);
   }
 
-  findAllArticleByIdCathegory(idCathegory: number): Observable<ArticleDto> {
-    return this.http.get<ArticleDto>(`${this.apiUrl}/filter/cathegory/${idCathegory}`);
+  findAllArticleByIdCathegory(idCathegory: number): Observable<ArticleDto[]> {
+    return this.http.get<ArticleDto[]>(`${this.apiUrl}/filter/cathegory/${idCathegory}`);
   }
 
   findByIdArticle(idArticle: number): Observable<ArticleDto> {
@@ -27,7 +27,7 @@ export class ArticleService {
   }
 
   findByCodeArticle(codeArticle: string): Observable<ArticleDto> {
-    return this.http.get<ArticleDto>(`${this.apiUrl}/${codeArticle}`);
+    return this.http.get<ArticleDto>(`${this.apiUrl}/code/${encodeURIComponent(codeArticle)}`);
   }
 
   findByHistoireCommandeClient(idArticle: number): Observable<LigneCommandeClientDto[]> {

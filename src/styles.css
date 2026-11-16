@@ -326,6 +326,13 @@ a {
   font-size: .85rem;
 }
 
+.inline-alert--success {
+  border-color: #b9e2c6;
+  color: #22663a;
+  background: #f1fbf4;
+}
+
+
 .contract-notice {
   margin-top: 20px;
   border-color: #d3ddff;

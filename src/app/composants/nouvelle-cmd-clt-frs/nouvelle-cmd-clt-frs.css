@@ -1,0 +1,8 @@
+
+.lignes-heading { margin-top: 28px; }
+.ligne-add { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+.ligne-add .form-field { flex: 1 1 260px; margin: 0; }
+.ligne-add .qty-field { flex: 0 0 120px; }
+.num { text-align: right; white-space: nowrap; }
+.num-input { width: 110px; margin-left: auto; text-align: right; }
+.empty-lines { margin: 8px 0 16px; font-size: .9rem; }

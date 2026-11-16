@@ -8,7 +8,7 @@
   <div class="success-alert" role="status" *ngIf="successMessage"><i class="bi bi-check-circle"></i> {{ successMessage }}</div>
 
   <form class="form-card movement-form" *ngIf="showForm" (ngSubmit)="enregistrerMouvement()">
-    <div class="form-section-heading"><span class="form-icon"><i class="bi bi-arrow-left-right"></i></span><div><h2>Enregistrer un mouvement</h2><p>Une correction remplace la quantité disponible par la quantité saisie.</p></div></div>
+    <div class="form-section-heading"><span class="form-icon"><i class="bi bi-arrow-left-right"></i></span><div><h2>Enregistrer un mouvement</h2><p>Une correction positive ajoute la quantité saisie au stock, une correction négative la retire.</p></div></div>
     <div class="form-grid">
       <label class="form-field"><span>Article <b>*</b></span><select class="form-select" name="article" [(ngModel)]="selectedArticleId" (ngModelChange)="selectedArticleChanged()" required><option [ngValue]="null" disabled>Choisir un article</option><option *ngFor="let article of articles" [ngValue]="article.id">{{ article.codeArticle }} — {{ article.designation }}</option></select></label>
       <label class="form-field"><span>Type de mouvement <b>*</b></span><select class="form-select" name="typeMouvement" [(ngModel)]="typeMouvement"><option value="ENTREE">Entrée</option><option value="SORTIE">Sortie</option><option value="CORRECTION_POS">Correction positive</option><option value="CORRECTION_NEG">Correction négative</option></select></label>

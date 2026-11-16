@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { User } from '../../services/user/user';
 import { UtilisateurDto } from '../../api/models';
+import { isClientUser } from '../../utils/user-roles';
 
 @Component({
   selector: 'app-header',
@@ -24,7 +25,7 @@ export class Header implements OnInit {
   ) { }
   ngOnInit(): void {
     this.connectedUser = this.userService.getConnectedUser();
-    this.isClient = this.connectedUser?.roles?.libelle === 'CLIENT';
+    this.isClient = isClientUser(this.connectedUser);
     const email = this.connectedUser?.email;
     if (!email) {
       return;
@@ -33,7 +34,7 @@ export class Header implements OnInit {
     this.userService.getUserByEmail(email).subscribe({
       next: user => {
         this.connectedUser = user;
-        this.isClient = user.roles?.libelle === 'CLIENT';
+        this.isClient = isClientUser(user);
         this.userService.setUtilisateur(user);
       },
       error: error => {

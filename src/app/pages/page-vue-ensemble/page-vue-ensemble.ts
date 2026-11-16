@@ -7,6 +7,7 @@ import { ClientService } from '../../services/client/client-service';
 import { CommandeClientService } from '../../services/commandeClient/commande-client-service';
 import { FournisseurService } from '../../services/fournisseur/fournisseur-service';
 import { User } from '../../services/user/user';
+import { isClientUser } from '../../utils/user-roles';
 
 @Component({
   selector: 'app-page-vue-ensemble',
@@ -34,7 +35,7 @@ export class PageVueEnsemble implements OnInit {
 
   ngOnInit(): void {
     this.connectedUser = this.userService.getConnectedUser();
-    this.isClient = this.connectedUser?.roles?.libelle === 'CLIENT';
+    this.isClient = isClientUser(this.connectedUser);
     if (this.isClient) {
       this.loadClientOverview();
       return;

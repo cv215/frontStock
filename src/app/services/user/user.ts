@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthentificationRequest, AuthentificationResponse, UtilisateurDto } from '../../api/models';
 import { UtilisateurService } from '../utilisateur/utilisateur-service';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
@@ -35,10 +36,28 @@ export class User {
 
   getConnectedUser(): UtilisateurDto | null {
     const user = localStorage.getItem('connectedUser');
-    if (user) {
-      return JSON.parse(user);
+    if (!user) {
+      return null;
     }
-    return null;
+    try {
+      return JSON.parse(user) as UtilisateurDto;
+    } catch {
+      localStorage.removeItem('connectedUser');
+      return null;
+    }
+  }
+
+  /** Vrai si le jeton est absent, illisible ou expiré (avec 10 s de marge). */
+  isTokenExpired(token: string | null): boolean {
+    if (!token) {
+      return true;
+    }
+    try {
+      const { exp } = jwtDecode<{ exp?: number }>(token);
+      return typeof exp === 'number' && exp * 1000 <= Date.now() + 10_000;
+    } catch {
+      return true;
+    }
   }
 
   clearSession(): void {
@@ -50,7 +69,7 @@ export class User {
   isUserLoggedAccessTokenvalid(): boolean {
     const user = localStorage.getItem('connectedUser');
     const accessToken = localStorage.getItem('accessToken');
-    if (user && accessToken) {
+    if (user && accessToken && !this.isTokenExpired(accessToken)) {
       return true;
     }
     this.clearSession();

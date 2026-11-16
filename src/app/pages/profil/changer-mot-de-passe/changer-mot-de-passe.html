@@ -1,5 +1,5 @@
 <section class="page-content form-page">
-  <header class="page-heading"><div><p class="eyebrow">SÉCURITÉ</p><h1>Changer le mot de passe</h1><p class="page-description">La mise à jour sera disponible lorsque l’API proposera cette opération.</p></div></header>
+  <header class="page-heading"><div><p class="eyebrow">SÉCURITÉ</p><h1>Changer le mot de passe</h1><p class="page-description">Saisissez votre mot de passe actuel puis choisissez-en un nouveau.</p></div></header>
   <form class="form-card" (ngSubmit)="changerMotDePasseUtilisateur()">
     <div class="form-section-heading"><span class="form-icon"><i class="bi bi-shield-lock"></i></span><div><h2>Mot de passe du compte</h2><p>Pour des raisons de sécurité, ne partagez jamais votre mot de passe.</p></div></div>
     <div class="form-grid">
@@ -8,6 +8,7 @@
       <label class="form-field"><span>Confirmer le nouveau mot de passe <b>*</b></span><input class="form-control" type="password" name="confirmerMotDePasse" [(ngModel)]="changerMotDePasse.confirmerMotDePasse" autocomplete="new-password" required></label>
     </div>
     <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
-    <div class="form-actions"><button class="btn btn-outline-secondary" type="button" (click)="cancel()">Retour au profil</button><button class="btn btn-primary" type="submit">Vérifier</button></div>
+    <div class="inline-alert inline-alert--success" role="status" *ngIf="successMessage"><i class="bi bi-check-circle"></i> {{ successMessage }}</div>
+    <div class="form-actions"><button class="btn btn-outline-secondary" type="button" (click)="cancel()">Retour au profil</button><button class="btn btn-primary" type="submit" [disabled]="isSaving"><span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>{{ isSaving ? 'Enregistrement...' : 'Changer le mot de passe' }}</button></div>
   </form>
 </section>

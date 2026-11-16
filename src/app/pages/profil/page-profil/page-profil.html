@@ -5,7 +5,7 @@
       <span class="profile-large-avatar">{{ (user.prenom || user.nom || 'U').charAt(0) }}</span>
       <h2>{{ user.prenom }} {{ user.nom }}</h2>
       <p>{{ user.email }}</p>
-      <span class="category-pill">{{ user.roles?.libelle || 'Utilisateur' }}</span>
+      <span class="category-pill">{{ roleLabel(user) }}</span>
       <button type="button" class="btn btn-outline-primary" (click)="modifierMotDePasse()"><i class="bi bi-lock me-2"></i>Changer le mot de passe</button>
     </section>
     <section class="table-card profile-details">

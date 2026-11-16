@@ -1,10 +1,11 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommandeClientDto, CommandeFournisseurDto } from '../../api/models';
 import { CommandeClientService } from '../../services/commandeClient/commande-client-service';
 import { CommandeFournisseurService } from '../../services/commandeFournisseur/commande-fournisseur-service';
 import { User } from '../../services/user/user';
+import { isClientUser } from '../../utils/user-roles';
+import { getHttpErrorMessage } from '../../utils/http-error';
 
 @Component({
   selector: 'app-page-cmd-clt-frs',
@@ -36,7 +37,7 @@ export class PageCmdCltFrs implements OnInit {
   ngOnInit(): void {
     this.origin = this.activatedRoute.snapshot.data['origin'] === 'fournisseur' ? 'fournisseur' : 'client';
     const user = this.userService.getConnectedUser();
-    this.isClient = user?.roles?.libelle === 'CLIENT';
+    this.isClient = isClientUser(user);
     this.connectedUserEmail = user?.email?.trim().toLocaleLowerCase() ?? '';
     this.activatedRoute.queryParamMap.subscribe(params => {
       this.selectedStatus = params.get('etat') === 'LIVREE' ? 'LIVREE' : null;
@@ -161,16 +162,6 @@ export class PageCmdCltFrs implements OnInit {
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim()) {
-        return error.error;
-      }
-      if (error.error && typeof error.error === 'object' && 'message' in error.error
-        && typeof error.error.message === 'string') {
-        return error.error.message;
-      }
-      return error.status === 0 ? 'Le serveur est indisponible. Réessayez plus tard.' : fallback;
-    }
-    return fallback;
+    return getHttpErrorMessage(error, fallback);
   }
 }

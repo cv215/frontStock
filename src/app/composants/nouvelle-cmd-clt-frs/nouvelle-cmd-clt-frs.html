@@ -1,6 +1,6 @@
 <section class="page-content form-page">
   <header class="page-heading">
-    <div><p class="eyebrow">SUIVI DES COMMANDES</p><h1>Nouvelle commande {{ origin }}</h1><p class="page-description">Créez la fiche de commande et associez-la à un contact.</p></div>
+    <div><p class="eyebrow">SUIVI DES COMMANDES</p><h1>Nouvelle commande {{ origin }}</h1><p class="page-description">Créez la commande, associez-la à un contact et ajoutez les articles commandés.</p></div>
   </header>
   <form class="form-card" (ngSubmit)="saveClick()">
     <div class="form-section-heading"><span class="form-icon"><i class="bi bi-receipt"></i></span><div><h2>Informations de la commande</h2><p>Le code doit être unique dans votre entreprise.</p></div></div>
@@ -10,8 +10,40 @@
       <label class="form-field" *ngIf="origin === 'client'"><span>Client <b>*</b></span><select class="form-select" name="client" [(ngModel)]="partnerId" [disabled]="isLoading" required><option [ngValue]="null" disabled>{{ isLoading ? 'Chargement...' : 'Sélectionner un client' }}</option><option *ngFor="let client of clients" [ngValue]="client.id">{{ client.prenom }} {{ client.nom }}</option></select></label>
       <label class="form-field" *ngIf="origin === 'fournisseur'"><span>Fournisseur <b>*</b></span><select class="form-select" name="fournisseur" [(ngModel)]="partnerId" [disabled]="isLoading" required><option [ngValue]="null" disabled>{{ isLoading ? 'Chargement...' : 'Sélectionner un fournisseur' }}</option><option *ngFor="let fournisseur of fournisseurs" [ngValue]="fournisseur.id">{{ fournisseur.prenom }} {{ fournisseur.nom }}</option></select></label>
     </div>
-    <div class="inline-alert contract-notice"><i class="bi bi-info-circle"></i> L’API actuelle permet d’enregistrer l’en-tête de commande et de modifier des lignes existantes, mais ne fournit pas d’opération pour ajouter une nouvelle ligne d’article.</div>
+    <div class="inline-alert" *ngIf="!isLoading && contactsCount === 0">
+      <i class="bi bi-info-circle"></i> Aucun {{ origin }} n’est enregistré. Créez-en un avant de passer une commande.
+    </div>
+
+    <div class="form-section-heading lignes-heading"><span class="form-icon"><i class="bi bi-box-seam"></i></span><div><h2>Articles commandés</h2><p>{{ origin === 'client' ? 'Prix de vente TTC' : 'Prix d’achat HT' }} proposé par défaut, modifiable par ligne.</p></div></div>
+    <div class="ligne-add">
+      <label class="form-field"><span>Article</span>
+        <select class="form-select" name="articleToAdd" [(ngModel)]="articleIdToAdd" [disabled]="isLoading">
+          <option [ngValue]="null" disabled>{{ articles.length ? 'Sélectionner un article' : 'Aucun article disponible' }}</option>
+          <option *ngFor="let article of availableArticles" [ngValue]="article.id">{{ article.codeArticle }} — {{ article.designation }}</option>
+        </select>
+      </label>
+      <label class="form-field qty-field"><span>Quantité</span><input class="form-control" type="number" min="1" step="1" name="quantiteToAdd" [(ngModel)]="quantiteToAdd"></label>
+      <button class="btn btn-outline-primary" type="button" (click)="ajouterLigne()" [disabled]="isLoading || articleIdToAdd === null"><i class="bi bi-plus-lg"></i> Ajouter</button>
+    </div>
+
+    <div class="table-responsive" *ngIf="lignes.length > 0">
+      <table class="table align-middle mb-0">
+        <thead><tr><th>Article</th><th class="num">Quantité</th><th class="num">Prix unitaire</th><th class="num">Total</th><th></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let ligne of lignes; let i = index">
+            <td><strong>{{ ligne.article.designation }}</strong><br><small class="text-muted">{{ ligne.article.codeArticle }}</small></td>
+            <td class="num"><input class="form-control form-control-sm num-input" type="number" min="1" step="1" [name]="'qte' + i" [(ngModel)]="ligne.quantite"></td>
+            <td class="num"><input class="form-control form-control-sm num-input" type="number" min="0" step="0.01" [name]="'prix' + i" [(ngModel)]="ligne.prixUnitaire"></td>
+            <td class="num">{{ ligne.quantite * ligne.prixUnitaire | number:'1.2-2' }}</td>
+            <td class="num"><button class="btn btn-sm btn-outline-danger" type="button" (click)="supprimerLigne(i)" aria-label="Retirer la ligne"><i class="bi bi-trash"></i></button></td>
+          </tr>
+        </tbody>
+        <tfoot><tr><th colspan="3" class="num">Total</th><th class="num">{{ total | number:'1.2-2' }}</th><th></th></tr></tfoot>
+      </table>
+    </div>
+    <p class="text-muted empty-lines" *ngIf="lignes.length === 0">Aucun article ajouté pour le moment.</p>
+
     <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
-    <div class="form-actions"><button class="btn btn-outline-secondary" type="button" (click)="cancelClick()">Annuler</button><button class="btn btn-primary" type="submit" [disabled]="isSaving || isLoading || contactsCount === 0"><span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>{{ isSaving ? 'Enregistrement...' : 'Créer la commande' }}</button></div>
+    <div class="form-actions"><button class="btn btn-outline-secondary" type="button" (click)="cancelClick()">Annuler</button><button class="btn btn-primary" type="submit" [disabled]="isSaving || isLoading || contactsCount === 0 || lignes.length === 0"><span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>{{ isSaving ? 'Enregistrement...' : 'Créer la commande' }}</button></div>
   </form>
 </section>

@@ -15,9 +15,9 @@
       <label class="form-field"><span>Adresse e-mail <b>*</b></span><input class="form-control" type="email" name="email" [(ngModel)]="utilisateurDto.email" autocomplete="email" required></label>
       <label class="form-field"><span>Mot de passe provisoire <b>*</b></span><input class="form-control" type="password" name="password" [(ngModel)]="utilisateurDto.motDePasse" autocomplete="new-password" minlength="8" required></label>
       <label class="form-field"><span>Date de naissance</span><input class="form-control" type="date" name="dateNaissance" [(ngModel)]="utilisateurDto.dateNaissance"></label>
-      <label class="form-field"><span>Adresse</span><input class="form-control" name="adresse1" [(ngModel)]="adresse.adresse1" autocomplete="address-line1"></label>
-      <label class="form-field"><span>Ville</span><input class="form-control" name="ville" [(ngModel)]="adresse.ville" autocomplete="address-level2"></label>
-      <label class="form-field"><span>Pays</span><input class="form-control" name="pays" [(ngModel)]="adresse.pays" autocomplete="country-name"></label>
+      <label class="form-field"><span>Adresse <b>*</b></span><input class="form-control" name="adresse1" [(ngModel)]="adresse.adresse1" autocomplete="address-line1" required></label>
+      <label class="form-field"><span>Ville <b>*</b></span><input class="form-control" name="ville" [(ngModel)]="adresse.ville" autocomplete="address-level2" required></label>
+      <label class="form-field"><span>Pays <b>*</b></span><input class="form-control" name="pays" [(ngModel)]="adresse.pays" autocomplete="country-name" required></label>
     </div>
     <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
     <div class="form-actions">

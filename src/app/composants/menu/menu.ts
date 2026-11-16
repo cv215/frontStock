@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MenuModel } from './menu.model';
 import { Router } from '@angular/router';
 import { User } from '../../services/user/user';
+import { isClientUser } from '../../utils/user-roles';
 
 @Component({
   selector: 'app-menu',
@@ -160,7 +161,7 @@ export class Menu implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isClient = this.userService.getConnectedUser()?.roles?.libelle === 'CLIENT';
+    this.isClient = isClientUser(this.userService.getConnectedUser());
     if (this.isClient) {
       this.menuProperties = this.clientMenuProperties;
     }

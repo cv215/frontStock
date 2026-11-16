@@ -46,7 +46,7 @@ export class MotDePasseOublie implements OnDestroy {
 
     this.errorMessage = '';
     this.isSubmitting = true;
-    this.authenticationService.generatePasswordResetToken(this.email).subscribe({
+    this.authenticationService.demanderReinitialisationMotDePasse(this.email).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.requestSubmitted = true;
@@ -60,7 +60,7 @@ export class MotDePasseOublie implements OnDestroy {
     if (this.remainingSeconds === 0 && !this.isSubmitting) {
       this.errorMessage = '';
       this.isSubmitting = true;
-      this.authenticationService.generatePasswordResetToken(this.email).subscribe({
+      this.authenticationService.demanderReinitialisationMotDePasse(this.email).subscribe({
         next: () => {
           this.isSubmitting = false;
           this.startCountdown();

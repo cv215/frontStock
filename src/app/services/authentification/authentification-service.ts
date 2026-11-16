@@ -16,10 +16,10 @@ export class AuthentificationService {
     return this.http.post<AuthentificationResponse>(`${this.apiUrl}/connexion`, request);
   }
 
-  generatePasswordResetToken(email: string): Observable<string> {
-    return this.http.post(`${this.apiUrl}/token`, null, {
-      params: { username: email },
-      responseType: 'text'
+  /** Demande de réinitialisation : la réponse est identique que le compte existe ou non. */
+  demanderReinitialisationMotDePasse(email: string): Observable<{ message?: string }> {
+    return this.http.post<{ message?: string }>(`${this.apiUrl}/mot-de-passe-oublie`, null, {
+      params: { email }
     });
   }
 }

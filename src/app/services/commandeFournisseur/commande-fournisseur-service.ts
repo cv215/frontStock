@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CommandeFournisseurDto } from '../../api/models';
+import { CommandeFournisseurDto, LigneCommandeFournisseurDto } from '../../api/models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -20,12 +20,20 @@ export class CommandeFournisseurService {
     return this.http.get<CommandeFournisseurDto>(`${this.apiUrl}/${id}`);
   }
 
+  findByCode(code: string): Observable<CommandeFournisseurDto> {
+    return this.http.get<CommandeFournisseurDto>(`${this.apiUrl}/code/${encodeURIComponent(code)}`);
+  }
+
   findAll(): Observable<CommandeFournisseurDto[]> {
     return this.http.get<CommandeFournisseurDto[]>(`${this.apiUrl}/all`);
   }
 
+  findAllLigneCommandeFournisseur(idCommande: number): Observable<LigneCommandeFournisseurDto[]> {
+    return this.http.get<LigneCommandeFournisseurDto[]>(`${this.apiUrl}/lignesCommande/${idCommande}`);
+  }
+
   updateEtatCommande(id: number, etat: 'EN_COURS' | 'VALIDE' | 'LIVREE'): Observable<CommandeFournisseurDto> {
-    return this.http.get<CommandeFournisseurDto>(`${this.apiUrl}/update/etat/${id}/${etat}`);
+    return this.http.patch<CommandeFournisseurDto>(`${this.apiUrl}/update/etat/${id}/${etat}`, null);
   }
 
   delete(id: number): Observable<void> {

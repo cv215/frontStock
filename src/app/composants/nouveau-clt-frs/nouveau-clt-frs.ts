@@ -1,5 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { getHttpErrorMessage } from '../../utils/http-error';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdresseDto } from '../../api/models';
 import { ClientService } from '../../services/client/client-service';
@@ -43,8 +43,20 @@ export class NouveauCltFrs implements OnInit {
     const nom = this.nom.trim();
     const prenom = this.prenom.trim();
     const email = this.email.trim().toLowerCase();
-    if (!nom || !prenom || !email) {
-      this.errorMessage = 'Le nom, le prénom et l’adresse e-mail sont obligatoires.';
+    const telephone = this.telephone.trim();
+    const adresse: AdresseDto = {
+      adresse1: this.adresse.adresse1?.trim(),
+      adresse2: this.adresse.adresse2?.trim(),
+      ville: this.adresse.ville?.trim(),
+      codePostale: this.adresse.codePostale?.trim(),
+      pays: this.adresse.pays?.trim(),
+    };
+    if (!nom || !prenom || !email || !telephone || !adresse.adresse1 || !adresse.ville || !adresse.pays) {
+      this.errorMessage = 'Renseignez tous les champs obligatoires : nom, prénom, e-mail, téléphone, adresse, ville et pays.';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.errorMessage = 'L’adresse e-mail n’est pas valide.';
       return;
     }
 
@@ -54,8 +66,8 @@ export class NouveauCltFrs implements OnInit {
       nom,
       prenom,
       email,
-      numTel: this.telephone.trim(),
-      adresse: this.adresse,
+      numTel: telephone,
+      adresse,
       ...(idEntreprise != null ? { idEntreprise } : {})
     };
 
@@ -79,16 +91,6 @@ export class NouveauCltFrs implements OnInit {
   }
 
   private getErrorMessage(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim()) {
-        return error.error;
-      }
-      if (error.error && typeof error.error === 'object' && 'message' in error.error
-        && typeof error.error.message === 'string') {
-        return error.error.message;
-      }
-      return error.status === 0 ? 'Le serveur est indisponible. Réessayez plus tard.' : 'L’enregistrement a échoué.';
-    }
-    return 'L’enregistrement a échoué.';
+    return getHttpErrorMessage(error, 'L’enregistrement a échoué.');
   }
 }
