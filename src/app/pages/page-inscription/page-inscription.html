@@ -12,8 +12,8 @@
 
   <section class="register-panel" aria-labelledby="register-title">
     <div class="register-card">
-      <h2 id="register-title">{{ role === 'client' ? 'Créer un compte client' : 'Inscrire une entreprise' }}</h2>
-      <p class="register-intro">{{ role === 'client' ? 'Renseignez vos informations personnelles pour accéder à votre espace.' : 'Renseignez les informations de votre entreprise.' }}</p>
+      <h2 id="register-title">{{ titre }}</h2>
+      <p class="register-intro">{{ intro }}</p>
 
       <div class="register-errors" role="alert" *ngIf="errorMsg.length > 0">
         <div *ngFor="let msg of errorMsg">{{ msg }}</div>
@@ -28,6 +28,10 @@
               <input type="radio" name="role" value="client" [(ngModel)]="role" (change)="selectRole('client')">
               <span><i class="bi bi-person" aria-hidden="true"></i> Client</span>
             </label>
+            <label class="role-option" [class.selected]="role === 'fournisseur'">
+              <input type="radio" name="role" value="fournisseur" [(ngModel)]="role" (change)="selectRole('fournisseur')">
+              <span><i class="bi bi-truck" aria-hidden="true"></i> Fournisseur</span>
+            </label>
             <label class="role-option" [class.selected]="role === 'entreprise'">
               <input type="radio" name="role" value="entreprise" [(ngModel)]="role" (change)="selectRole('entreprise')">
               <span><i class="bi bi-buildings" aria-hidden="true"></i> Entreprise</span>
@@ -35,7 +39,17 @@
           </div>
         </fieldset>
 
-        <ng-container *ngIf="role === 'client'; else entrepriseFields">
+        <ng-container *ngIf="role !== 'entreprise'; else entrepriseFields">
+          <div class="field-group field-full">
+            <label for="inputEntreprise">Entreprise avec laquelle vous travaillez</label>
+            <div class="input-wrap">
+              <i class="bi bi-buildings" aria-hidden="true"></i>
+              <select id="inputEntreprise" name="idEntreprise" [(ngModel)]="idEntreprisePartenaire" required>
+                <option [ngValue]="null" disabled>{{ entreprises.length ? 'Choisir une entreprise' : 'Aucune entreprise inscrite pour le moment' }}</option>
+                <option *ngFor="let entreprise of entreprises" [ngValue]="entreprise.id">{{ entreprise.nom }}</option>
+              </select>
+            </div>
+          </div>
           <div class="field-group">
             <label for="inputLastName">Nom</label>
             <div class="input-wrap">
@@ -58,10 +72,17 @@
             </div>
           </div>
           <div class="field-group">
-            <label for="inputBirthDate">Date de naissance</label>
+            <label for="inputPhone">Téléphone</label>
+            <div class="input-wrap">
+              <i class="bi bi-telephone" aria-hidden="true"></i>
+              <input type="tel" id="inputPhone" name="numTel" autocomplete="tel" [(ngModel)]="utilisateurDto.numTel" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="inputBirthDate">Date de naissance (facultatif)</label>
             <div class="input-wrap">
               <i class="bi bi-calendar" aria-hidden="true"></i>
-              <input type="date" id="inputBirthDate" name="dateNaissance" autocomplete="bday" [(ngModel)]="utilisateurDto.dateNaissance" required>
+              <input type="date" id="inputBirthDate" name="dateNaissance" autocomplete="bday" [(ngModel)]="utilisateurDto.dateNaissance">
             </div>
           </div>
           <div class="field-group">
@@ -75,7 +96,7 @@
             <label for="inputAddress2">Complément d’adresse</label>
             <div class="input-wrap">
               <i class="bi bi-geo" aria-hidden="true"></i>
-              <input type="text" id="inputAddress2" name="adresse2" placeholder="Appartement, bâtiment, étage" autocomplete="address-line2" [(ngModel)]="adresseUtilisateur.adresse2" required>
+              <input type="text" id="inputAddress2" name="adresse2" placeholder="Appartement, bâtiment, étage" autocomplete="address-line2" [(ngModel)]="adresseUtilisateur.adresse2">
             </div>
           </div>
           <div class="field-group">
@@ -96,7 +117,7 @@
             <label for="inputPostalCode">Code postal</label>
             <div class="input-wrap">
               <i class="bi bi-mailbox" aria-hidden="true"></i>
-              <input type="text" id="inputPostalCode" name="codePostale" autocomplete="postal-code" [(ngModel)]="adresseUtilisateur.codePostale" required>
+              <input type="text" id="inputPostalCode" name="codePostale" autocomplete="postal-code" [(ngModel)]="adresseUtilisateur.codePostale">
             </div>
           </div>
           <div class="field-group">
@@ -225,7 +246,7 @@
           </div>
         </ng-template>
         <button class="submit-button" type="submit" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Enregistrement...' : (role === 'client' ? 'Créer un compte' : 'Inscrire l’entreprise') }}
+          {{ isSubmitting ? 'Enregistrement...' : boutonLabel }}
         </button>
       </form>
       <p class="signin-prompt">Vous avez déjà un compte ? <a [routerLink]="['/login']">Se connecter</a></p>

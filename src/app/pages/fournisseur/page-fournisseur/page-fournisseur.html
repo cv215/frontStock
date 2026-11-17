@@ -5,7 +5,7 @@
       <h1>Fournisseurs</h1>
       <p class="page-description">Gérez vos partenaires et leurs coordonnées.</p>
     </div>
-    <app-boutton-action [isImporterVisible]="false" [isExporterVisible]="false"
+    <app-boutton-action *ngIf="canEdit" [isImporterVisible]="false" [isExporterVisible]="false"
       (clickEvent)="nouveauFournisseur()"></app-boutton-action>
   </header>
 
@@ -28,7 +28,7 @@
       <i class="bi bi-truck"></i>
       <h2>{{ searchTerm ? 'Aucun résultat' : 'Aucun fournisseur pour le moment' }}</h2>
       <p>{{ searchTerm ? 'Essayez un autre nom ou une autre adresse e-mail.' : 'Ajoutez votre premier fournisseur pour commencer.' }}</p>
-      <button *ngIf="!searchTerm" class="btn btn-primary" type="button" (click)="nouveauFournisseur()">Ajouter un fournisseur</button>
+      <button *ngIf="!searchTerm && canEdit" class="btn btn-primary" type="button" (click)="nouveauFournisseur()">Ajouter un fournisseur</button>
     </div>
     <div class="table-responsive" *ngIf="!isLoading && filteredFournisseurs.length > 0">
       <table class="table align-middle mb-0">
@@ -40,7 +40,7 @@
             <td>{{ fournisseur.adresse?.ville || '—' }}<small>{{ fournisseur.adresse?.pays || '' }}</small></td>
             <td class="text-end">
               <ng-container *ngIf="deleteCandidateId !== fournisseur.id; else confirmDelete">
-                <button class="icon-button danger-action" type="button" aria-label="Supprimer le fournisseur" (click)="deleteCandidateId = fournisseur.id ?? null"><i class="bi bi-trash3"></i></button>
+                <button *ngIf="canEdit" class="icon-button danger-action" type="button" aria-label="Supprimer le fournisseur" (click)="deleteCandidateId = fournisseur.id ?? null"><i class="bi bi-trash3"></i></button>
               </ng-container>
               <ng-template #confirmDelete>
                 <span class="confirm-actions"><button class="btn btn-sm btn-outline-secondary" type="button" (click)="deleteCandidateId = null">Annuler</button><button class="btn btn-sm btn-danger" type="button" (click)="supprimerFournisseur(fournisseur.id!)">Confirmer</button></span>

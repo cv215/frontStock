@@ -80,7 +80,7 @@
       <h1>Vue d’ensemble</h1>
       <p class="page-description">Un aperçu rapide de votre activité et de votre catalogue.</p>
     </div>
-    <a class="btn btn-primary" [routerLink]="['/dashboard/nouvelarticle']"><i class="bi bi-plus-lg me-2"></i>Nouvel article</a>
+    <a *ngIf="peutCreerArticle" class="btn btn-primary" [routerLink]="['/dashboard/nouvelarticle']"><i class="bi bi-plus-lg me-2"></i>Nouvel article</a>
   </header>
 
   <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
@@ -90,20 +90,25 @@
       <span class="overview-label">Articles</span><strong>{{ articles.length }}</strong>
       <small>Voir le catalogue <i class="bi bi-arrow-up-right"></i></small>
     </a>
-    <a class="overview-card" [routerLink]="['/dashboard/clients']">
+    <a *ngIf="estEquipe" class="overview-card" [routerLink]="['/dashboard/clients']">
       <span class="overview-icon violet"><i class="bi bi-people"></i></span>
       <span class="overview-label">Clients</span><strong>{{ clients.length }}</strong>
       <small>Gérer les clients <i class="bi bi-arrow-up-right"></i></small>
     </a>
-    <a class="overview-card" [routerLink]="['/dashboard/fournisseurs']">
+    <a *ngIf="estEquipe" class="overview-card" [routerLink]="['/dashboard/fournisseurs']">
       <span class="overview-icon orange"><i class="bi bi-truck"></i></span>
       <span class="overview-label">Fournisseurs</span><strong>{{ fournisseurs.length }}</strong>
       <small>Gérer les fournisseurs <i class="bi bi-arrow-up-right"></i></small>
     </a>
-    <a class="overview-card" [routerLink]="['/dashboard/commandeclient']">
+    <a *ngIf="estEquipe" class="overview-card" [routerLink]="['/dashboard/commandeclient']">
       <span class="overview-icon green"><i class="bi bi-cart-check"></i></span>
       <span class="overview-label">Commandes clients en cours</span><strong>{{ commandesEnCours }}</strong>
       <small>{{ commandesClient.length }} commande{{ commandesClient.length === 1 ? '' : 's' }} au total <i class="bi bi-arrow-up-right"></i></small>
+    </a>
+    <a *ngIf="!estEquipe" class="overview-card" [routerLink]="['/dashboard/commandefournisseur']">
+      <span class="overview-icon green"><i class="bi bi-truck-flatbed"></i></span>
+      <span class="overview-label">Commandes reçues</span><strong><i class="bi bi-inbox"></i></strong>
+      <small>Voir les commandes de l’entreprise <i class="bi bi-arrow-up-right"></i></small>
     </a>
   </div>
   <div class="table-card overview-list">

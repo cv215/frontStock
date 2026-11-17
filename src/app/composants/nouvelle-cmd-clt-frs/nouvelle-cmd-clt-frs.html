@@ -7,10 +7,10 @@
     <div class="form-grid">
       <label class="form-field"><span>Code commande <b>*</b></span><input class="form-control" name="code" [(ngModel)]="code" autocomplete="off" required></label>
       <label class="form-field"><span>Date de commande <b>*</b></span><input class="form-control" type="date" name="dateCommande" [(ngModel)]="dateCommande" required></label>
-      <label class="form-field" *ngIf="origin === 'client'"><span>Client <b>*</b></span><select class="form-select" name="client" [(ngModel)]="partnerId" [disabled]="isLoading" required><option [ngValue]="null" disabled>{{ isLoading ? 'Chargement...' : 'Sélectionner un client' }}</option><option *ngFor="let client of clients" [ngValue]="client.id">{{ client.prenom }} {{ client.nom }}</option></select></label>
+      <label class="form-field" *ngIf="origin === 'client' && !estClient"><span>Client <b>*</b></span><select class="form-select" name="client" [(ngModel)]="partnerId" [disabled]="isLoading" required><option [ngValue]="null" disabled>{{ isLoading ? 'Chargement...' : 'Sélectionner un client' }}</option><option *ngFor="let client of clients" [ngValue]="client.id">{{ client.prenom }} {{ client.nom }}</option></select></label>
       <label class="form-field" *ngIf="origin === 'fournisseur'"><span>Fournisseur <b>*</b></span><select class="form-select" name="fournisseur" [(ngModel)]="partnerId" [disabled]="isLoading" required><option [ngValue]="null" disabled>{{ isLoading ? 'Chargement...' : 'Sélectionner un fournisseur' }}</option><option *ngFor="let fournisseur of fournisseurs" [ngValue]="fournisseur.id">{{ fournisseur.prenom }} {{ fournisseur.nom }}</option></select></label>
     </div>
-    <div class="inline-alert" *ngIf="!isLoading && contactsCount === 0">
+    <div class="inline-alert" *ngIf="!isLoading && contactsCount === 0 && !estClient">
       <i class="bi bi-info-circle"></i> Aucun {{ origin }} n’est enregistré. Créez-en un avant de passer une commande.
     </div>
 
@@ -33,7 +33,7 @@
           <tr *ngFor="let ligne of lignes; let i = index">
             <td><strong>{{ ligne.article.designation }}</strong><br><small class="text-muted">{{ ligne.article.codeArticle }}</small></td>
             <td class="num"><input class="form-control form-control-sm num-input" type="number" min="1" step="1" [name]="'qte' + i" [(ngModel)]="ligne.quantite"></td>
-            <td class="num"><input class="form-control form-control-sm num-input" type="number" min="0" step="0.01" [name]="'prix' + i" [(ngModel)]="ligne.prixUnitaire"></td>
+            <td class="num"><input class="form-control form-control-sm num-input" type="number" min="0" step="0.01" [name]="'prix' + i" [(ngModel)]="ligne.prixUnitaire" [readonly]="estClient"></td>
             <td class="num">{{ ligne.quantite * ligne.prixUnitaire | number:'1.2-2' }}</td>
             <td class="num"><button class="btn btn-sm btn-outline-danger" type="button" (click)="supprimerLigne(i)" aria-label="Retirer la ligne"><i class="bi bi-trash"></i></button></td>
           </tr>

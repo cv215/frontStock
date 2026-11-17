@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AdresseDto, UtilisateurDto } from '../../../api/models';
 import { UtilisateurService } from '../../../services/utilisateur/utilisateur-service';
 import { User } from '../../../services/user/user';
+import { Role, ROLES_EQUIPE } from '../../../utils/permissions';
 
 @Component({
   selector: 'app-nouvel-utilisateur',
@@ -13,6 +14,8 @@ import { User } from '../../../services/user/user';
 })
 export class NouvelUtilisateur implements OnInit {
   utilisateurDto: UtilisateurDto = { actif: true };
+  readonly rolesDisponibles = ROLES_EQUIPE;
+  role: Role = 'UTILISATEUR';
   adresse: AdresseDto = {};
   errorMessage = '';
   isSaving = false;
@@ -54,7 +57,7 @@ export class NouvelUtilisateur implements OnInit {
       email,
       adresse: this.adresse,
       actif: true,
-      roles: [{ libelle: 'UTILISATEUR' }],
+      roles: [{ libelle: this.role }],
       ...(idEntreprise != null ? { idEntreprise } : {})
     };
 

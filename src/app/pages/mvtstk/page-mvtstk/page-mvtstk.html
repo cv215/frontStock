@@ -1,7 +1,7 @@
 <section class="page-content">
   <header class="page-heading">
     <div><p class="eyebrow">INVENTAIRE</p><h1>Mouvements de stock</h1><p class="page-description">Consultez l’historique et enregistrez une entrée, une sortie ou une correction.</p></div>
-    <button class="btn btn-primary" type="button" [disabled]="articles.length === 0" (click)="showForm = !showForm"><i class="bi" [class.bi-plus-lg]="!showForm" [class.bi-x-lg]="showForm"></i><span class="ms-2">{{ showForm ? 'Fermer' : 'Nouveau mouvement' }}</span></button>
+    <button *ngIf="canEdit" class="btn btn-primary" type="button" [disabled]="articles.length === 0" (click)="showForm = !showForm"><i class="bi" [class.bi-plus-lg]="!showForm" [class.bi-x-lg]="showForm"></i><span class="ms-2">{{ showForm ? 'Fermer' : 'Nouveau mouvement' }}</span></button>
   </header>
 
   <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>

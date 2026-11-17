@@ -1,0 +1,5 @@
+
+.profile-large-avatar { overflow: hidden; }
+.profile-large-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.photo-button { margin: 4px 0 8px; cursor: pointer; }
+.photo-button.disabled { opacity: .6; pointer-events: none; }

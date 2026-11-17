@@ -4,6 +4,7 @@ import { ArticleService } from '../../../services/article/article-service';
 import { MvstkService } from '../../../services/mouvementStock/mvstk-service';
 import { User } from '../../../services/user/user';
 import { getHttpErrorMessage } from '../../../utils/http-error';
+import { can } from '../../../utils/permissions';
 
 type MouvementType = NonNullable<MvstkDto['typeMvstkt']>;
 
@@ -14,6 +15,7 @@ type MouvementType = NonNullable<MvstkDto['typeMvstkt']>;
   styleUrl: './page-mvtstk.css',
 })
 export class PageMvtstk implements OnInit {
+  readonly canEdit = can('gererStock');
   articles: ArticleDto[] = [];
   mouvements: MvstkDto[] = [];
   selectedArticleId: number | null = null;

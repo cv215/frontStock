@@ -1,3 +1,5 @@
+import { can } from '../../utils/permissions';
+import { catchError, Observable, of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
@@ -8,6 +10,11 @@ import { CommandeClientService } from '../../services/commandeClient/commande-cl
 import { FournisseurService } from '../../services/fournisseur/fournisseur-service';
 import { User } from '../../services/user/user';
 import { isClientUser } from '../../utils/user-roles';
+
+/** Une section que le rôle ne permet pas de lire (403) est simplement affichée vide. */
+function sansRefus<T>(source: Observable<T[]>): Observable<T[]> {
+  return source.pipe(catchError(error => error instanceof HttpErrorResponse && error.status === 403 ? of([] as T[]) : throwError(() => error)));
+}
 
 @Component({
   selector: 'app-page-vue-ensemble',
@@ -22,6 +29,8 @@ export class PageVueEnsemble implements OnInit {
   commandesClient: CommandeClientDto[] = [];
   connectedUser: UtilisateurDto | null = null;
   isClient = false;
+  readonly peutCreerArticle = can('gererCatalogue');
+  readonly estEquipe = can('equipe');
   errorMessage = '';
   isLoading = true;
 
@@ -90,9 +99,9 @@ export class PageVueEnsemble implements OnInit {
 
   private loadClientOverview(): void {
     forkJoin({
-      articles: this.articleService.findAll(),
-      fournisseurs: this.fournisseurService.findAll(),
-      commandesClient: this.commandeClientService.findAll()
+      articles: sansRefus(this.articleService.findAll()),
+      fournisseurs: sansRefus(this.fournisseurService.findAll()),
+      commandesClient: sansRefus(this.commandeClientService.findAll())
     }).subscribe({
       next: result => {
         this.articles = result.articles ?? [];
@@ -109,10 +118,10 @@ export class PageVueEnsemble implements OnInit {
 
   private loadBusinessOverview(): void {
     forkJoin({
-      articles: this.articleService.findAll(),
-      clients: this.clientService.findAll(),
-      fournisseurs: this.fournisseurService.findAll(),
-      commandesClient: this.commandeClientService.findAll()
+      articles: sansRefus(this.articleService.findAll()),
+      clients: sansRefus(this.clientService.findAll()),
+      fournisseurs: sansRefus(this.fournisseurService.findAll()),
+      commandesClient: sansRefus(this.commandeClientService.findAll())
     }).subscribe({
       next: result => {
         this.articles = result.articles ?? [];

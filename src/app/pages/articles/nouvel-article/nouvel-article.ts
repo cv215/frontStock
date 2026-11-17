@@ -1,3 +1,5 @@
+import { catchError, map, of, switchMap } from 'rxjs';
+import { PhotoService, PHOTO_TYPES_ACCEPTES, verifierPhoto } from '../../../services/photo/photo-service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ArticleDto, CathegoryDto } from '../../../api/models';
@@ -20,9 +22,14 @@ export class NouvelArticle implements OnInit {
   isLoadingCategories = true;
   isSaving = false;
 
+  readonly photoTypes = PHOTO_TYPES_ACCEPTES;
+  photo: File | null = null;
+  photoPreview: string | null = null;
+
   constructor(
     private router: Router,
     private articleService: ArticleService,
+    private photoService: PhotoService,
     private categoryService: CategoryService,
     private userService: User
   ) { }
@@ -38,6 +45,27 @@ export class NouvelArticle implements OnInit {
         this.isLoadingCategories = false;
       }
     });
+  }
+
+  choisirPhoto(event: Event): void {
+    const fichier = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.errorMessage = '';
+    if (this.photoPreview) {
+      URL.revokeObjectURL(this.photoPreview);
+    }
+    this.photo = null;
+    this.photoPreview = null;
+    if (!fichier) {
+      return;
+    }
+    const erreur = verifierPhoto(fichier);
+    if (erreur) {
+      this.errorMessage = erreur;
+      (event.target as HTMLInputElement).value = '';
+      return;
+    }
+    this.photo = fichier;
+    this.photoPreview = URL.createObjectURL(fichier);
   }
 
   cancel(): void {
@@ -81,9 +109,17 @@ export class NouvelArticle implements OnInit {
     };
 
     this.isSaving = true;
-    this.articleService.save(articleToSave).subscribe({
-      next: () => {
-        this.router.navigate(['dashboard', 'articles']);
+    this.articleService.save(articleToSave).pipe(
+      // Photo envoyée une fois l'article créé (il faut son identifiant).
+      switchMap(article => this.photo && article.id != null
+        ? this.photoService.envoyer('article', article.id, this.photo).pipe(
+            map(() => true),
+            catchError(() => of(false))
+          )
+        : of(true))
+    ).subscribe({
+      next: photoOk => {
+        this.router.navigate(['dashboard', 'articles'], photoOk ? {} : { state: { avertissement: 'L’article a été créé mais la photo n’a pas pu être envoyée.' } });
       },
       error: error => {
         this.isSaving = false;

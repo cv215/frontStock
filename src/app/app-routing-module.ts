@@ -58,7 +58,8 @@ const routes: Routes = [
       {
         path: 'statistiques',
         component: PageStatistiques,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'equipe' }
       },
       {
         path: 'articles',
@@ -68,24 +69,28 @@ const routes: Routes = [
       {
         path: 'nouvelarticle',
         component: NouvelArticle,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'gererCatalogue' }
       },
       {
         path: 'mvtstk',
         component: PageMvtstk,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'equipe' }
       },
       {
         path: 'clients',
         component: PageClient,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'equipe' }
       },
       {
         path: 'nouveauclient',
         component: NouveauCltFrs,
         canActivate: [ApplicationGuard],
         data : {
-          origin: "client"
+          origin: "client",
+          permission: 'gererClients'
         }
       },
       {
@@ -93,7 +98,8 @@ const routes: Routes = [
         component: PageCmdCltFrs,
         canActivate: [ApplicationGuard],
         data : {
-          origin: "client"
+          origin: "client",
+          permission: 'voirCommandesClients'
         }
       },
       {
@@ -101,20 +107,23 @@ const routes: Routes = [
         component: NouvelleCmdCltFrs,
         canActivate: [ApplicationGuard],
         data : {
-          origin: "client"
+          origin: "client",
+          permission: 'creerCommandeClient'
         }
       },
       {
         path: 'fournisseurs',
         component: PageFournisseur,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'equipe' }
       },
       {
         path: 'nouveaufournisseur',
         component: NouveauCltFrs,
         canActivate: [ApplicationGuard],
         data : {
-          origin: "fournisseur"
+          origin: "fournisseur",
+          permission: 'gererFournisseurs'
         }
       },
       {
@@ -122,7 +131,8 @@ const routes: Routes = [
         component: PageCmdCltFrs,
         canActivate: [ApplicationGuard],
         data : {
-          origin: "fournisseur"
+          origin: "fournisseur",
+          permission: 'voirCommandesFournisseurs'
         }
       },
       {
@@ -130,33 +140,39 @@ const routes: Routes = [
         component: NouvelleCmdCltFrs,
         canActivate: [ApplicationGuard],
         data : {
-          origin: "fournisseur"
+          origin: "fournisseur",
+          permission: 'gererCommandesFournisseurs'
         }
       },
        {
         path: 'categories',
         component: PageCategories,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'equipe' }
       },
        {
         path: 'nouvellecategorie',
         component: NouvelleCategory,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'gererCatalogue' }
       },
       {
         path: 'nouvellecategorie/:id',
         component: NouvelleCategory,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'gererCatalogue' }
       },
       {
         path: 'utilisateurs',
         component: PageUtilisateur,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'gererUtilisateurs' }
       },
       {
         path: 'nouvelutilisateur',
         component: NouvelUtilisateur,
-        canActivate: [ApplicationGuard]
+        canActivate: [ApplicationGuard],
+        data: { permission: 'gererUtilisateurs' }
       },
       {
         path: 'profil',

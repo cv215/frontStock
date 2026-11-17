@@ -3,6 +3,9 @@ import { Router } from '@angular/router';
 import { ArticleDto } from '../../../api/models';
 import { ArticleService } from '../../../services/article/article-service';
 import { getHttpErrorMessage } from '../../../utils/http-error';
+import { PhotoService, PHOTO_TYPES_ACCEPTES, photoUrl, verifierPhoto } from '../../../services/photo/photo-service';
+import { ArticleDto as ArticleModel } from '../../../api/models';
+import { can } from '../../../utils/permissions';
 
 @Component({
   selector: 'app-page-article',
@@ -11,6 +14,12 @@ import { getHttpErrorMessage } from '../../../utils/http-error';
   styleUrl: './page-article.css',
 })
 export class PageArticle implements OnInit {
+  readonly canEdit = can('gererCatalogue');
+  readonly photoUrl = photoUrl;
+  readonly photoTypes = PHOTO_TYPES_ACCEPTES;
+  photoUploadId: number | null = null;
+  /** Message transmis par la page de création (ex. photo non envoyée). */
+  avertissement = (history.state?.['avertissement'] as string | undefined) ?? '';
   articles: ArticleDto[] = [];
   searchTerm = '';
   errorMessage = '';
@@ -21,7 +30,8 @@ export class PageArticle implements OnInit {
 
   constructor(
     private router: Router,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    private photoService: PhotoService
   ) { }
 
   ngOnInit(): void {
@@ -74,6 +84,30 @@ export class PageArticle implements OnInit {
       error: error => {
         this.errorMessage = this.getErrorMessage(error, 'La suppression de l’article a échoué.');
         this.deleteCandidateId = null;
+      }
+    });
+  }
+
+  /** Envoie la photo choisie pour l'article puis met à jour la miniature. */
+  changerPhoto(article: ArticleModel, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const fichier = input.files?.[0];
+    input.value = '';
+    const erreur = verifierPhoto(fichier);
+    if (erreur || !fichier || article.id == null) {
+      this.errorMessage = erreur ?? '';
+      return;
+    }
+    this.errorMessage = '';
+    this.photoUploadId = article.id;
+    this.photoService.envoyer('article', article.id, fichier).subscribe({
+      next: res => {
+        article.photo = res.photo;
+        this.photoUploadId = null;
+      },
+      error: error => {
+        this.photoUploadId = null;
+        this.errorMessage = this.getErrorMessage(error, 'L’envoi de la photo a échoué.');
       }
     });
   }

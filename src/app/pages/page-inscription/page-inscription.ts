@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { EntreprisePublique } from '../../services/entreprise/entreprise-service';
 import { AdresseDto, ClientDto, EntrepriseDto, FournisseurDto, UtilisateurDto } from '../../api/models';
 import { Router } from '@angular/router';
 import { User } from '../../services/user/user';
@@ -9,7 +10,7 @@ import { finalize, map, switchMap, throwError } from 'rxjs';
 import { ClientService } from '../../services/client/client-service';
 import { FournisseurService } from '../../services/fournisseur/fournisseur-service';
 
-type InscriptionRole = 'client' | 'entreprise';
+type InscriptionRole = 'client' | 'fournisseur' | 'entreprise';
 
 @Component({
   selector: 'app-page-inscription',
@@ -17,8 +18,10 @@ type InscriptionRole = 'client' | 'entreprise';
   templateUrl: './page-inscription.html',
   styleUrl: './page-inscription.css',
 })
-export class PageInscription {
+export class PageInscription implements OnInit {
   role: InscriptionRole = 'client';
+  entreprises: EntreprisePublique[] = [];
+  idEntreprisePartenaire: number | null = null;
   utilisateurDto: UtilisateurDto = {};
   adresseUtilisateur: AdresseDto = {};
   entrepriseDto: EntrepriseDto = {};
@@ -40,6 +43,29 @@ export class PageInscription {
     private userService: User,
     private router: Router
   ) {}
+
+  ngOnInit(): void {
+    this.entrepriseService.findAllPublic().subscribe({
+      next: entreprises => this.entreprises = entreprises ?? [],
+      error: () => this.entreprises = []
+    });
+  }
+
+  get titre(): string {
+    return this.role === 'client' ? 'Créer un compte client'
+      : this.role === 'fournisseur' ? 'Créer un compte fournisseur'
+      : 'Inscrire une entreprise';
+  }
+
+  get intro(): string {
+    return this.role === 'entreprise'
+      ? 'Renseignez les informations de votre entreprise.'
+      : 'Choisissez l’entreprise avec laquelle vous travaillez et renseignez vos coordonnées.';
+  }
+
+  get boutonLabel(): string {
+    return this.role === 'entreprise' ? 'Inscrire l’entreprise' : 'Créer mon compte';
+  }
 
   togglePasswordVisibility(field: 'password' | 'confirmPassword'): void {
     if (field === 'password') {
@@ -63,17 +89,24 @@ export class PageInscription {
       this.inscrireEntreprise();
       return;
     }
-    /*else if (this.role === 'fournisseur') {
-      this.inscrireFournisseur();
-      return;
-    }*/
-
-    this.inscrireClient();
+    this.inscrirePartenaire();
   }
 
-  private inscrireClient(): void {
+  /** Inscription d'un client ou d'un fournisseur rattaché à une entreprise existante. */
+  private inscrirePartenaire(): void {
     const email = this.utilisateurDto.email?.trim().toLowerCase() ?? '';
     const password = this.utilisateurDto.motDePasse ?? '';
+
+    if (this.idEntreprisePartenaire === null) {
+      this.errorMsg = ['Choisissez l’entreprise avec laquelle vous travaillez.'];
+      return;
+    }
+    if (!this.utilisateurDto.numTel?.trim()) {
+      this.errorMsg = ['Renseignez votre numéro de téléphone.'];
+      return;
+    }
+    this.utilisateurDto.idEntreprise = this.idEntreprisePartenaire;
+    this.utilisateurDto.roles = [{ libelle: this.role === 'fournisseur' ? 'FOURNISSEUR' : 'CLIENT' }];
 
     if (password.length < 8) {
       this.errorMsg = ['Le mot de passe doit contenir au moins 8 caractères.'];

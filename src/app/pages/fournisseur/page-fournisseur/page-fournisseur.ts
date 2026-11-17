@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FournisseurDto } from '../../../api/models';
 import { FournisseurService } from '../../../services/fournisseur/fournisseur-service';
 import { getHttpErrorMessage } from '../../../utils/http-error';
+import { can } from '../../../utils/permissions';
 
 @Component({
   selector: 'app-page-fournisseur',
@@ -11,6 +12,7 @@ import { getHttpErrorMessage } from '../../../utils/http-error';
   styleUrl: './page-fournisseur.css',
 })
 export class PageFournisseur implements OnInit {
+  readonly canEdit = can('gererFournisseurs');
   fournisseurs: FournisseurDto[] = [];
   searchTerm = '';
   errorMessage = '';

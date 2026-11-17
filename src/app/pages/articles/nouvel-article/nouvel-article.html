@@ -16,6 +16,13 @@
       <label class="form-field"><span>TVA (%) <b>*</b></span><input class="form-control" type="number" name="tva" min="0" max="100" step="0.01" [(ngModel)]="articleDto.tauxTva" (ngModelChange)="updatePrixTtc()" required></label>
       <label class="form-field"><span>Prix unitaire TTC (XAF)</span><input class="form-control" type="number" name="prixTtc" [ngModel]="articleDto.prixUnitaireTtc" readonly></label>
       <label class="form-field"><span>Catégorie <b>*</b></span><select class="form-select" name="category" [(ngModel)]="categoryId" required [disabled]="isLoadingCategories"><option [ngValue]="null" disabled>{{ isLoadingCategories ? 'Chargement...' : 'Sélectionner une catégorie' }}</option><option *ngFor="let category of categories" [ngValue]="category.id">{{ category.designation }}</option></select></label>
+      <label class="form-field photo-field"><span>Photo (facultatif)</span>
+        <span class="photo-picker">
+          <span class="photo-preview"><img *ngIf="photoPreview" [src]="photoPreview" alt="Aperçu de la photo"><i *ngIf="!photoPreview" class="bi bi-image"></i></span>
+          <input class="form-control" type="file" name="photo" [accept]="photoTypes" (change)="choisirPhoto($event)">
+        </span>
+        <small class="text-muted">JPEG, PNG, WebP ou GIF, 5 Mo maximum.</small>
+      </label>
     </div>
     <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
     <div class="form-actions">

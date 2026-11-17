@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ClientDto } from '../../../api/models';
 import { ClientService } from '../../../services/client/client-service';
 import { getHttpErrorMessage } from '../../../utils/http-error';
+import { can } from '../../../utils/permissions';
 
 @Component({
   selector: 'app-page-client',
@@ -11,6 +12,7 @@ import { getHttpErrorMessage } from '../../../utils/http-error';
   styleUrl: './page-client.css',
 })
 export class PageClient implements OnInit {
+  readonly canEdit = can('gererClients');
   clients: ClientDto[] = [];
   searchTerm = '';
   errorMessage = '';

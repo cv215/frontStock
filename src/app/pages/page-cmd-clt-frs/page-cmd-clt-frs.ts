@@ -6,6 +6,7 @@ import { CommandeFournisseurService } from '../../services/commandeFournisseur/c
 import { User } from '../../services/user/user';
 import { isClientUser } from '../../utils/user-roles';
 import { getHttpErrorMessage } from '../../utils/http-error';
+import { can } from '../../utils/permissions';
 
 @Component({
   selector: 'app-page-cmd-clt-frs',
@@ -14,6 +15,9 @@ import { getHttpErrorMessage } from '../../utils/http-error';
   styleUrl: './page-cmd-clt-frs.css',
 })
 export class PageCmdCltFrs implements OnInit {
+  /** Créer une commande (client : la sienne) / modifier l'état ou supprimer. */
+  get canCreate(): boolean { return this.origin === 'client' ? can('creerCommandeClient') : can('gererCommandesFournisseurs'); }
+  get canManage(): boolean { return this.origin === 'client' ? can('gererCommandesClients') : can('gererCommandesFournisseurs'); }
   origin = "";
   commandesClient: CommandeClientDto[] = [];
   commandesFournisseur: CommandeFournisseurDto[] = [];

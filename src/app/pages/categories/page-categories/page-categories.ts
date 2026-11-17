@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CathegoryDto } from '../../../api/models';
 import { CategoryService } from '../../../services/cathegory/category-service';
+import { can } from '../../../utils/permissions';
 
 @Component({
   selector: 'app-page-categories',
@@ -11,6 +12,7 @@ import { CategoryService } from '../../../services/cathegory/category-service';
   styleUrl: './page-categories.css',
 })
 export class PageCategories implements OnInit {
+  readonly canEdit = can('gererCatalogue');
   listCategories: Array<CathegoryDto> = [];
   searchTerm = '';
   errorMessage = '';

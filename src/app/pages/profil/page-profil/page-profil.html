@@ -2,7 +2,12 @@
   <header class="page-heading"><div><p class="eyebrow">MON ESPACE</p><h1>Mon profil</h1><p class="page-description">Vos informations personnelles et votre espace entreprise.</p></div></header>
   <div class="profile-layout" *ngIf="connectedUser as user">
     <section class="profile-card">
-      <span class="profile-large-avatar">{{ (user.prenom || user.nom || 'U').charAt(0) }}</span>
+      <span class="profile-large-avatar"><img *ngIf="photoUrl(user.photo) as src" [src]="src" alt="Photo de profil"><ng-container *ngIf="!user.photo">{{ (user.prenom || user.nom || 'U').charAt(0) }}</ng-container></span>
+      <label class="btn btn-sm btn-outline-secondary photo-button" [class.disabled]="isUploading">
+        <i class="bi me-1" [class.bi-camera]="!isUploading" [class.bi-hourglass-split]="isUploading"></i>{{ isUploading ? 'Envoi...' : (user.photo ? 'Changer la photo' : 'Ajouter une photo') }}
+        <input type="file" hidden [accept]="photoTypes" [disabled]="isUploading" (change)="changerPhoto($event)">
+      </label>
+      <div class="inline-alert" role="alert" *ngIf="photoError">{{ photoError }}</div>
       <h2>{{ user.prenom }} {{ user.nom }}</h2>
       <p>{{ user.email }}</p>
       <span class="category-pill">{{ roleLabel(user) }}</span>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, GuardResult, MaybeAsync, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { User } from '../user/user';
-import { Observable } from 'rxjs';
+import { can, Permission } from '../../utils/permissions';
 
 @Injectable({
   providedIn: 'root',
@@ -9,11 +9,22 @@ import { Observable } from 'rxjs';
 export class ApplicationGuard implements CanActivate {
 
   constructor(
-    private userService: User
+    private userService: User,
+    private router: Router
   ){}
 
-  canActivate(route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    return this.userService.isUserLoggedAccessTokenvalid(); // autorise seulement si l'utilisateur est connecté et que son token est valide
+  /**
+   * Autorise l'accès si l'utilisateur est connecté avec un jeton valide et, quand la route
+   * déclare une permission (data.permission), s'il possède un rôle qui la donne.
+   */
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+    if (!this.userService.isUserLoggedAccessTokenvalid()) {
+      return false;
+    }
+    const permission = route.data?.['permission'] as Permission | undefined;
+    if (permission && !can(permission, this.userService.getConnectedUser())) {
+      return this.router.createUrlTree(['/dashboard/ensemble']);
+    }
+    return true;
   }
 }

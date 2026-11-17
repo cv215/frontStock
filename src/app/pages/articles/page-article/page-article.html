@@ -5,7 +5,7 @@
       <h1>Articles</h1>
       <p class="page-description">Suivez votre catalogue, vos prix et vos catégories.</p>
     </div>
-    <app-boutton-action [isImporterVisible]="false" [isExporterVisible]="false"
+    <app-boutton-action *ngIf="canEdit" [isImporterVisible]="false" [isExporterVisible]="false"
       (clickEvent)="nouvelArticle()"></app-boutton-action>
   </header>
 
@@ -18,6 +18,7 @@
     <span class="result-count">{{ filteredArticles.length }} article{{ filteredArticles.length === 1 ? '' : 's' }}</span>
   </div>
 
+  <div class="inline-alert" role="status" *ngIf="avertissement"><i class="bi bi-info-circle"></i> {{ avertissement }}</div>
   <div class="inline-alert" role="alert" *ngIf="errorMessage">
     <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
   </div>
@@ -28,20 +29,21 @@
       <i class="bi bi-box-seam"></i>
       <h2>{{ searchTerm ? 'Aucun résultat' : 'Votre catalogue est vide' }}</h2>
       <p>{{ searchTerm ? 'Essayez un autre code, nom ou catégorie.' : 'Ajoutez un article pour commencer à suivre votre stock.' }}</p>
-      <button *ngIf="!searchTerm" class="btn btn-primary" type="button" (click)="nouvelArticle()">Ajouter un article</button>
+      <button *ngIf="!searchTerm && canEdit" class="btn btn-primary" type="button" (click)="nouvelArticle()">Ajouter un article</button>
     </div>
     <div class="table-responsive" *ngIf="!isLoading && filteredArticles.length > 0">
       <table class="table align-middle mb-0">
         <thead><tr><th>Article</th><th>Catégorie</th><th class="text-end">Prix HT</th><th class="text-end">Prix TTC</th><th class="text-end">Actions</th></tr></thead>
         <tbody>
           <tr *ngFor="let article of pagedArticles">
-            <td><div class="person-cell"><span class="avatar article-avatar"><i class="bi bi-box"></i></span><div><strong>{{ article.designation || 'Sans désignation' }}</strong><small>{{ article.codeArticle || 'Code non renseigné' }}</small></div></div></td>
+            <td><div class="person-cell"><span class="avatar article-avatar"><img *ngIf="photoUrl(article.photo) as src" [src]="src" [alt]="article.designation" class="article-photo" loading="lazy"><i *ngIf="!article.photo" class="bi bi-box"></i></span><div><strong>{{ article.designation || 'Sans désignation' }}</strong><small>{{ article.codeArticle || 'Code non renseigné' }}</small></div></div></td>
             <td><span class="category-pill">{{ article.cathegory?.designation || 'Sans catégorie' }}</span></td>
             <td class="text-end">{{ article.prixUnitaireHt | number:'1.0-2' }} XAF</td>
             <td class="text-end"><strong>{{ article.prixUnitaireTtc | number:'1.0-2' }} XAF</strong></td>
             <td class="text-end">
               <ng-container *ngIf="deleteCandidateId !== article.id; else confirmDelete">
-                <button class="icon-button danger-action" type="button" aria-label="Supprimer l’article" (click)="deleteCandidateId = article.id ?? null"><i class="bi bi-trash3"></i></button>
+                <label *ngIf="canEdit" class="icon-button photo-action me-2" [class.disabled]="photoUploadId === article.id" [attr.aria-label]="'Changer la photo de ' + article.designation" title="Changer la photo"><i class="bi" [class.bi-camera]="photoUploadId !== article.id" [class.bi-hourglass-split]="photoUploadId === article.id"></i><input type="file" [accept]="photoTypes" hidden [disabled]="photoUploadId === article.id" (change)="changerPhoto(article, $event)"></label>
+                <button *ngIf="canEdit" class="icon-button danger-action" type="button" aria-label="Supprimer l’article" (click)="deleteCandidateId = article.id ?? null"><i class="bi bi-trash3"></i></button>
               </ng-container>
               <ng-template #confirmDelete>
                 <span class="confirm-actions"><button class="btn btn-sm btn-outline-secondary" type="button" (click)="deleteCandidateId = null">Annuler</button><button class="btn btn-sm btn-danger" type="button" (click)="supprimerArticle(article.id!)">Confirmer</button></span>

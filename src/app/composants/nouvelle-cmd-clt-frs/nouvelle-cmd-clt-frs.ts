@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
+import { isClientUser } from '../../utils/user-roles';
 import { ArticleDto, ClientDto, CommandeClientDto, CommandeFournisseurDto, FournisseurDto } from '../../api/models';
 import { ArticleService } from '../../services/article/article-service';
 import { ClientService } from '../../services/client/client-service';
@@ -24,6 +25,8 @@ interface LigneSaisie {
 })
 export class NouvelleCmdCltFrs implements OnInit {
   origin = '';
+  /** Client connecté : il commande en son propre nom, sans choisir de client. */
+  estClient = false;
   clients: ClientDto[] = [];
   fournisseurs: FournisseurDto[] = [];
   articles: ArticleDto[] = [];
@@ -53,7 +56,10 @@ export class NouvelleCmdCltFrs implements OnInit {
   ngOnInit(): void {
     this.origin = this.activatedRoute.snapshot.data['origin'] === 'fournisseur' ? 'fournisseur' : 'client';
     this.code = this.generateCode();
-    const contacts$: Observable<ClientDto[] | FournisseurDto[]> = this.origin === 'client'
+    this.estClient = this.origin === 'client' && isClientUser(this.userService.getConnectedUser());
+    const contacts$: Observable<ClientDto[] | FournisseurDto[]> = this.estClient
+      ? of([])
+      : this.origin === 'client'
       ? this.clientService.findAll()
       : this.fournisseurService.findAll();
     forkJoin({ contacts: contacts$, articles: this.articleService.findAll() }).subscribe({
@@ -74,6 +80,9 @@ export class NouvelleCmdCltFrs implements OnInit {
   }
 
   get contactsCount(): number {
+    if (this.estClient) {
+      return 1;
+    }
     return this.origin === 'client' ? this.clients.length : this.fournisseurs.length;
   }
 
@@ -115,7 +124,7 @@ export class NouvelleCmdCltFrs implements OnInit {
   saveClick(): void {
     this.errorMessage = '';
     const code = this.code.trim();
-    if (!code || !this.dateCommande || this.partnerId === null) {
+    if (!code || !this.dateCommande || (this.partnerId === null && !this.estClient)) {
       this.errorMessage = 'Le code, la date et le contact associé sont obligatoires.';
       return;
     }
@@ -139,7 +148,7 @@ export class NouvelleCmdCltFrs implements OnInit {
 
     this.isSaving = true;
     if (this.origin === 'client') {
-      const client = this.clients.find(item => item.id === this.partnerId);
+      const client: ClientDto | undefined = this.estClient ? {} : this.clients.find(item => item.id === this.partnerId);
       if (!client) {
         this.errorMessage = 'Le client sélectionné est introuvable.';
         this.isSaving = false;
@@ -149,7 +158,7 @@ export class NouvelleCmdCltFrs implements OnInit {
         code,
         dateCommande: dateIso,
         etatCommande: 'EN_COURS',
-        client: { id: client.id },
+        ...(this.estClient ? {} : { client: { id: client.id } }),
         ligneCommandeClients: lignes,
         ...(idEntreprise != null ? { idEntreprise } : {})
       };

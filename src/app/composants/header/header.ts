@@ -1,3 +1,4 @@
+import { photoUrl } from '../../services/photo/photo-service';
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { User } from '../../services/user/user';
@@ -19,6 +20,11 @@ export class Header implements OnInit {
     month: 'long',
     year: 'numeric'
   }).format(new Date());
+
+  /** Photo lue depuis la session : se met à jour dès que le profil change la photo. */
+  get photo(): string | null {
+    return photoUrl(this.userService.getConnectedUser()?.photo);
+  }
 
   constructor(
     private userService: User

@@ -1,7 +1,7 @@
 <section class="page-content">
   <header class="page-heading">
     <div><p class="eyebrow">CATALOGUE</p><h1>Catégories</h1><p class="page-description">Classez vos articles pour retrouver votre catalogue plus rapidement.</p></div>
-    <app-boutton-action [isImporterVisible]="false" [isExporterVisible]="false" (clickEvent)="nouvelCategory()"></app-boutton-action>
+    <app-boutton-action *ngIf="canEdit" [isImporterVisible]="false" [isExporterVisible]="false" (clickEvent)="nouvelCategory()"></app-boutton-action>
   </header>
   <div class="list-toolbar">
     <label class="search-field"><i class="bi bi-search" aria-hidden="true"></i><input type="search" [(ngModel)]="searchTerm" placeholder="Rechercher une catégorie..." aria-label="Rechercher une catégorie"></label>
@@ -10,10 +10,10 @@
   <div class="inline-alert" role="alert" *ngIf="errorMessage"><i class="bi bi-exclamation-circle"></i> {{ errorMessage }}</div>
   <div class="table-card">
     <div class="loading-state" *ngIf="isLoading"><span class="spinner-border spinner-border-sm"></span> Chargement des catégories...</div>
-    <div class="empty-state" *ngIf="!isLoading && !errorMessage && filteredCategories.length === 0"><i class="bi bi-tags"></i><h2>{{ searchTerm ? 'Aucun résultat' : 'Aucune catégorie' }}</h2><p>{{ searchTerm ? 'Essayez un autre code ou une autre désignation.' : 'Créez une catégorie pour organiser vos articles.' }}</p><button *ngIf="!searchTerm" class="btn btn-primary" type="button" (click)="nouvelCategory()">Créer une catégorie</button></div>
+    <div class="empty-state" *ngIf="!isLoading && !errorMessage && filteredCategories.length === 0"><i class="bi bi-tags"></i><h2>{{ searchTerm ? 'Aucun résultat' : 'Aucune catégorie' }}</h2><p>{{ searchTerm ? 'Essayez un autre code ou une autre désignation.' : 'Créez une catégorie pour organiser vos articles.' }}</p><button *ngIf="!searchTerm && canEdit" class="btn btn-primary" type="button" (click)="nouvelCategory()">Créer une catégorie</button></div>
     <div class="table-responsive" *ngIf="!isLoading && filteredCategories.length > 0">
       <table class="table align-middle mb-0"><thead><tr><th>Code</th><th>Description</th><th class="text-end">Actions</th></tr></thead>
-        <tbody><tr *ngFor="let category of filteredCategories"><td><span class="category-pill">{{ category.code }}</span></td><td><strong>{{ category.designation }}</strong></td><td class="text-end"><ng-container *ngIf="deleteCandidateId !== category.id; else confirmDelete"><button class="icon-button" type="button" aria-label="Modifier la catégorie" (click)="modifierCategory(category.id!)"><i class="bi bi-pencil"></i></button><button class="icon-button danger-action ms-2" type="button" aria-label="Supprimer la catégorie" (click)="deleteCandidateId = category.id ?? null"><i class="bi bi-trash3"></i></button></ng-container><ng-template #confirmDelete><span class="confirm-actions"><button class="btn btn-sm btn-outline-secondary" type="button" (click)="deleteCandidateId = null">Annuler</button><button class="btn btn-sm btn-danger" type="button" (click)="supprimerCategory(category.id!)">Confirmer</button></span></ng-template></td></tr></tbody>
+        <tbody><tr *ngFor="let category of filteredCategories"><td><span class="category-pill">{{ category.code }}</span></td><td><strong>{{ category.designation }}</strong></td><td class="text-end"><ng-container *ngIf="deleteCandidateId !== category.id; else confirmDelete"><button *ngIf="canEdit" class="icon-button" type="button" aria-label="Modifier la catégorie" (click)="modifierCategory(category.id!)"><i class="bi bi-pencil"></i></button><button *ngIf="canEdit" class="icon-button danger-action ms-2" type="button" aria-label="Supprimer la catégorie" (click)="deleteCandidateId = category.id ?? null"><i class="bi bi-trash3"></i></button></ng-container><ng-template #confirmDelete><span class="confirm-actions"><button class="btn btn-sm btn-outline-secondary" type="button" (click)="deleteCandidateId = null">Annuler</button><button class="btn btn-sm btn-danger" type="button" (click)="supprimerCategory(category.id!)">Confirmer</button></span></ng-template></td></tr></tbody>
       </table>
     </div>
   </div>

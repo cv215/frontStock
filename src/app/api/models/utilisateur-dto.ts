@@ -13,6 +13,7 @@ export interface UtilisateurDto {
   id?: number;
   idEntreprise?: number;
   motDePasse?: string;
+  numTel?: string;
   nom?: string;
   photo?: string;
   prenom?: string;
